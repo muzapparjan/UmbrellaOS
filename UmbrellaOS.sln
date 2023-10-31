@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmbrellaOS", "UmbrellaOS\UmbrellaOS.csproj", "{12B91BC0-F67A-4D0A-B463-1B1A71B7A053}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmbrellaOS.Sandbox", "UmbrellaOS.Sandbox\UmbrellaOS.Sandbox.csproj", "{F6E0B676-D38A-4A76-A659-CB45241AB286}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{12B91BC0-F67A-4D0A-B463-1B1A71B7A053}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12B91BC0-F67A-4D0A-B463-1B1A71B7A053}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12B91BC0-F67A-4D0A-B463-1B1A71B7A053}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6E0B676-D38A-4A76-A659-CB45241AB286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6E0B676-D38A-4A76-A659-CB45241AB286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6E0B676-D38A-4A76-A659-CB45241AB286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6E0B676-D38A-4A76-A659-CB45241AB286}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
