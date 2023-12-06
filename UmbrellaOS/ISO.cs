@@ -89,7 +89,7 @@ namespace UmbrellaOS
             }
             public int OffsetFromGreenwichMeanTimeInNumberOf15MinIntervals
             {
-                get => data[17];
+                get => (sbyte)data[17];
                 set
                 {
                     if (value < -48 || value > 52)
@@ -100,6 +100,19 @@ namespace UmbrellaOS
 
             private readonly byte[] data = new byte[17];
 
+            public DateAndTime() { }
+            public DateAndTime(int year = 0, int month = 0, int day = 0, int hour = 0, int minute = 0, int second = 0, int hundredthsOfASecond = 0, int offsetFromGreenwichMeanTimeInNumberOf15MinIntervals = 0)
+            {
+                Year = year;
+                Month = month;
+                Day = day;
+                Hour = hour;
+                Minute = minute;
+                Second = second;
+                HundredthsOfASecond = hundredthsOfASecond;
+                OffsetFromGreenwichMeanTimeInNumberOf15MinIntervals = offsetFromGreenwichMeanTimeInNumberOf15MinIntervals;
+            }
+
             public void Write(Stream stream)
             {
                 stream.Write(data);
@@ -107,6 +120,198 @@ namespace UmbrellaOS
             public async Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
             {
                 await stream.WriteAsync(data, cancellationToken);
+            }
+        }
+        public sealed class VolumeFlags : IBinaryStreamWriter
+        {
+            public bool ContainsEscapeCharNotInISO2375
+            {
+                get => code.GetBitLittleEndian(0);
+                set => code.SetBitLittleEndian(0, value);
+            }
+
+            private byte code = 0;
+
+            public VolumeFlags() { }
+            public VolumeFlags(bool containsEscapeCharNotInISO2375 = false)
+            {
+                ContainsEscapeCharNotInISO2375 = containsEscapeCharNotInISO2375;
+            }
+
+            public void Write(Stream stream)
+            {
+                stream.WriteByte(code);
+            }
+            public async Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                await stream.WriteAsync(new byte[1] { code }, cancellationToken);
+            }
+        }
+        public sealed class RecordingDateAndTime : IBinaryStreamWriter
+        {
+            public int YearSince1900
+            {
+                get => data[0];
+                set
+                {
+                    if (value < 0 || value > 255)
+                        throw new ArgumentOutOfRangeException(nameof(value), "year since 1900 should be from 0 to 255");
+                    data[0] = (byte)value;
+                }
+            }
+            public int Month
+            {
+                get => data[1];
+                set
+                {
+                    if (value < 0 || value > 12)
+                        throw new ArgumentOutOfRangeException(nameof(value), "month should be from 0 to 12");
+                    data[1] = (byte)value;
+                }
+            }
+            public int Day
+            {
+                get => data[2];
+                set
+                {
+                    if (value < 0 || value > 31)
+                        throw new ArgumentOutOfRangeException(nameof(value), "day should be from 0 to 31");
+                    data[2] = (byte)value;
+                }
+            }
+            public int Hour
+            {
+                get => data[3];
+                set
+                {
+                    if (value < 0 || value > 23)
+                        throw new ArgumentOutOfRangeException(nameof(value), "hour should be from 0 to 23");
+                    data[3] = (byte)value;
+                }
+            }
+            public int Minute
+            {
+                get => data[4];
+                set
+                {
+                    if (value < 0 || value > 59)
+                        throw new ArgumentOutOfRangeException(nameof(value), "minute should be from 0 to 59");
+                    data[4] = (byte)value;
+                }
+            }
+            public int Second
+            {
+                get => data[5];
+                set
+                {
+                    if (value < 0 || value > 59)
+                        throw new ArgumentOutOfRangeException(nameof(value), "second should be from 0 to 59");
+                    data[5] = (byte)value;
+                }
+            }
+            public int OffsetFromGreenwichMeanTimeInNumberOf15MinIntervals
+            {
+                get => (sbyte)data[6];
+                set
+                {
+                    if (value < -48 || value > 52)
+                        throw new ArgumentOutOfRangeException(nameof(value), "offset should be from -48 to 52");
+                    data[6] = (byte)value;
+                }
+            }
+
+            private readonly byte[] data = new byte[7];
+
+            public RecordingDateAndTime() { }
+            public RecordingDateAndTime(int yearSince1900 = 0, int month = 0, int day = 0, int hour = 0, int minute = 0, int second = 0, int offsetFromGreenwichMeanTimeInNumberOf15MinIntervals = 0)
+            {
+                YearSince1900 = yearSince1900;
+                Month = month;
+                Day = day;
+                Hour = hour;
+                Minute = minute;
+                Second = second;
+                OffsetFromGreenwichMeanTimeInNumberOf15MinIntervals = offsetFromGreenwichMeanTimeInNumberOf15MinIntervals;
+            }
+
+            public void Write(Stream stream)
+            {
+                stream.Write(data);
+            }
+            public async Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                await stream.WriteAsync(data, cancellationToken);
+            }
+        }
+        public sealed class FileFlags : IBinaryStreamWriter
+        {
+            public bool Existence
+            {
+                get => code.GetBitLittleEndian(0);
+                set => code.SetBitLittleEndian(0, value);
+            }
+            public bool Directory
+            {
+                get => code.GetBitLittleEndian(1);
+                set => code.SetBitLittleEndian(1, value);
+            }
+            public bool AssociatedFile
+            {
+                get => code.GetBitLittleEndian(2);
+                set => code.SetBitLittleEndian(2, value);
+            }
+            public bool Record
+            {
+                get => code.GetBitLittleEndian(3);
+                set => code.SetBitLittleEndian(3, value);
+            }
+            public bool Protection
+            {
+                get => code.GetBitLittleEndian(4);
+                set => code.SetBitLittleEndian(4, value);
+            }
+            public bool MultiExtent
+            {
+                get => code.GetBitLittleEndian(7);
+                set => code.SetBitLittleEndian(7, value);
+            }
+
+            private byte code = 0;
+
+            public FileFlags() { }
+            public FileFlags(bool existence = false, bool directory = false, bool associatedFile = false, bool record = false, bool protection = false, bool multiExtent = false)
+            {
+                Existence = existence;
+                Directory = directory;
+                AssociatedFile = associatedFile;
+                Record = record;
+                Protection = protection;
+                MultiExtent = multiExtent;
+            }
+
+            public void Write(Stream stream)
+            {
+                stream.WriteByte(code);
+            }
+            public async Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                await stream.WriteAsync(new byte[1] { code }, cancellationToken);
+            }
+        }
+        public sealed class Permissions : IBinaryStreamWriter
+        {
+            //TODO
+            private readonly byte[] data = new byte[2] { 0xAA, 0xAA };
+
+            public void Write(Stream stream)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+            public Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                //TODO
+                throw new NotImplementedException();
             }
         }
 
@@ -122,8 +327,8 @@ namespace UmbrellaOS
                 get => bootSystemIdentifier;
                 set
                 {
-                    if(!IsACharString(value))
-                        throw new ArgumentException("characters in boot system identifier should be a-characters",nameof(value));
+                    if (!IsACharString(value))
+                        throw new ArgumentException("characters in boot system identifier should be a-characters", nameof(value));
                     bootSystemIdentifier = value;
                     bsi.FillWithZero();
                     Encoding.ASCII.GetBytes(bootSystemIdentifier).CopyTo(bsi, 0);
@@ -312,6 +517,158 @@ namespace UmbrellaOS
             }
             public override Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
             {
+                throw new NotImplementedException();
+            }
+        }
+        public sealed class SupplementaryVolumeDescriptor : VolumeDescriptor
+        {
+            //TODO
+
+            public override void Write(Stream stream)
+            {
+                stream.WriteByte(2);
+                stream.Write(STANDARD_IDENTIFIER);
+                stream.WriteByte(1);
+                //TODO
+                throw new NotImplementedException();
+            }
+            public override Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+        }
+        public sealed class EnhancedVolumeDescriptor : VolumeDescriptor
+        {
+            //TODO
+
+            public override void Write(Stream stream)
+            {
+                stream.WriteByte(2);
+                stream.Write(STANDARD_IDENTIFIER);
+                stream.WriteByte(2);
+                //TODO
+                throw new NotImplementedException();
+            }
+            public override Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+        }
+        public sealed class VolumePartitionDescriptor : VolumeDescriptor
+        {
+            //TODO
+
+            public override void Write(Stream stream)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+            public override Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+        }
+
+        public sealed class DirectoryRecord : IBinaryStreamWriter
+        {
+            public byte LengthOfDirectoryRecord
+            {
+                get => lengthOfDirectoryRecord;
+                set => lengthOfDirectoryRecord = value;
+            }
+            public byte ExtendedAttributeRecordLength
+            {
+                get => extendedAttributeRecordLength;
+                set => extendedAttributeRecordLength = value;
+            }
+            public ulong LocationOfExtent
+            {
+                get => locationOfExtent;
+                set => locationOfExtent = value;
+            }
+            public ulong DataLength
+            {
+                get => dataLength;
+                set => dataLength = value;
+            }
+            public RecordingDateAndTime RecordingDateAndTime
+            {
+                get => recordingDateAndTime;
+                set => recordingDateAndTime = value ?? throw new ArgumentNullException(nameof(value));
+            }
+            public FileFlags FileFlags
+            {
+                get => fileFlags;
+                set => fileFlags = value ?? throw new ArgumentNullException(nameof(value));
+            }
+            public byte FileUnitSize
+            {
+                get => fileUnitSize;
+                set => fileUnitSize = value;
+            }
+            public byte InterleaveGapSize
+            {
+                get => interleaveGapSize;
+                set => interleaveGapSize = value;
+            }
+            public uint VolumeSequenceNumber
+            {
+                get => volumeSequenceNumber;
+                set => volumeSequenceNumber = value;
+            }
+
+            private byte lengthOfDirectoryRecord;
+            private byte extendedAttributeRecordLength;
+            private ulong locationOfExtent;
+            private ulong dataLength;
+            private RecordingDateAndTime recordingDateAndTime = new();
+            private FileFlags fileFlags = new();
+            private byte fileUnitSize;
+            private byte interleaveGapSize;
+            private uint volumeSequenceNumber;
+            //TODO
+
+            public void Write(Stream stream)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+            public Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+        }
+        public sealed class PathTableRecord : IBinaryStreamWriter
+        {
+            //TODO
+
+            public void Write(Stream stream)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+            public Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+        }
+        public sealed class ExtendedAttributeRecord : IBinaryStreamWriter
+        {
+            //TODO
+
+            public void Write(Stream stream)
+            {
+                //TODO
+                throw new NotImplementedException();
+            }
+            public Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+            {
+                //TODO
                 throw new NotImplementedException();
             }
         }

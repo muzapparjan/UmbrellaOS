@@ -21,5 +21,16 @@ namespace UmbrellaOS
             BinaryPrimitives.WriteUInt64LittleEndian(bytes, value);
             return bytes;
         }
+        public static bool GetBitLittleEndian(this byte b, int digit) => (b & (0x01 << digit)) > 0;
+        public static void SetBitLittleEndian(this ref byte b, int digit, bool value)
+        {
+            if (digit < 0 || digit > 7)
+                throw new ArgumentOutOfRangeException(nameof(digit), "digit should be from 0 to 7");
+            var mask = (byte)(0x01 << digit);
+            if (value)
+                b |= mask;
+            else
+                b &= (byte)(~mask);
+        }
     }
 }
