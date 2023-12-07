@@ -1,4 +1,4 @@
-﻿namespace UmbrellaOS
+﻿namespace UmbrellaOS.Generic.Interfaces
 {
     public interface IBinaryStreamWriter
     {
