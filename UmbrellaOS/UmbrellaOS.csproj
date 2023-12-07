@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DiscUtils" Version="0.16.13" />
+  </ItemGroup>
+
 </Project>

@@ -4,10 +4,11 @@ namespace UmbrellaOS
 {
     public static class Extensions
     {
-        public static void FillWithZero(this byte[] buffer)
+        public static void FillWithZero(this byte[] buffer) => buffer.FillWith(0);
+        public static void FillWith(this byte[] buffer, byte value)
         {
             for (var i = 0; i < buffer.Length; i++)
-                buffer[i] = 0;
+                buffer[i] = value;
         }
         public static byte[] GetBytesLittleEndian(this uint value)
         {
