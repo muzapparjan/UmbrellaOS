@@ -1,4 +1,5 @@
 ﻿using DiscUtils.Iso9660;
+using Iced.Intel;
 
 namespace UmbrellaOS
 {
@@ -14,9 +15,20 @@ namespace UmbrellaOS
             builder.Build(outputStream);
         }
 
-        private static byte[] BuildSystem()
+        private static Stream BuildSystem()
         {
-            return new byte[0];
+            var stream = new MemoryStream();
+            var assembler = BuildAssembler();
+            var codeWriter = new StreamCodeWriter(stream);
+            assembler.Assemble(codeWriter, 0);
+            return stream;
+        }
+
+        private static Assembler BuildAssembler()
+        {
+            var assembler = new Assembler(64);
+            assembler.nop();
+            return assembler;
         }
     }
 }
