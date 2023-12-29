@@ -6,3 +6,5 @@
 * [CHS and LBA Hard Disk Addresses](https://www.thomas-krenn.com/en/wiki/CHS_and_LBA_Hard_Disk_Addresses)
 * [Cylinder-Head-Sector](https://en.wikipedia.org/wiki/Cylinder-head-sector)
 * [Zone Bit Recording](https://en.wikipedia.org/wiki/Zone_bit_recording)
+* [Logical Block Addressing](https://en.wikipedia.org/wiki/Logical_block_addressing)
+* [Parallel ATA](https://en.wikipedia.org/wiki/Parallel_ATA)

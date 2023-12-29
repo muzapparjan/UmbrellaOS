@@ -27,11 +27,11 @@ namespace UmbrellaOS.Boot
      * Each sector is therefore 512 bytes (hard disks with a sector size of 4,096 bytes have been available since 2010).
      * Using 512 byte sectors, the maximum size of a hard disk would be 7,844 gigabytes using CHS addressing (1024*255*63*512 is 8,422,686,720 bytes).
      * </summary>
-     * <seealso cref="ICHSAddress"/>
+     * <seealso cref="ICHS"/>
      */
-    public struct CHSAddress : ICHSAddress
+    public struct CHS : ICHS
     {
-        public static readonly CHSAddress Default = new(0, 0, 1);
+        public static readonly CHS Default = new(0, 0, 1);
 
         /**
          * <summary>
@@ -41,7 +41,7 @@ namespace UmbrellaOS.Boot
          * </summary>
          * <exception cref="ArgumentOutOfRangeException">If the new value is not within the range of [0, 1023], an ArgumentOutOfRange exception may be thrown.</exception>
          */
-        public int Cylinder
+        public uint Cylinder
         {
             get => cylinder;
             set
@@ -58,7 +58,7 @@ namespace UmbrellaOS.Boot
          * </summary>
          * <exception cref="ArgumentOutOfRangeException">If the new value is not within the range of [0, 255], an ArgumentOutOfRange exception may be thrown.</exception>
          */
-        public int Head
+        public uint Head
         {
             get => head;
             set
@@ -76,7 +76,7 @@ namespace UmbrellaOS.Boot
          * </summary>
          * <exception cref="ArgumentOutOfRangeException">If the new value is not within the range of [1, 63], an ArgumentOutOfRange exception may be thrown.</exception>
          */
-        public int Sector
+        public uint Sector
         {
             get => sector;
             set
@@ -107,15 +107,15 @@ namespace UmbrellaOS.Boot
             }
             set
             {
-                Cylinder = (value[2] << 2) + (value[1] >> 6);
-                Head = (value[1] << 2) + (value[0] >> 6);
-                Sector = value[0] & 0x3F;
+                Cylinder = (uint)(value[2] << 2) + (uint)(value[1] >> 6);
+                Head = (uint)(value[1] << 2) + (uint)(value[0] >> 6);
+                Sector = value[0] & 0x3Fu;
             }
         }
 
-        private int cylinder = 0;
-        private int head = 0;
-        private int sector = 1;
+        private uint cylinder = 0;
+        private uint head = 0;
+        private uint sector = 1;
 
         /**
          * <summary>Create a new CHS address.</summary>
@@ -137,7 +137,7 @@ namespace UmbrellaOS.Boot
          * If values are not within the valid range, an ArgumentOutOfRange exception may be thrown.
          * </exception>
          */
-        public CHSAddress(int cylinder, int head, int sector)
+        public CHS(uint cylinder, uint head, uint sector)
         {
             Cylinder = cylinder;
             Head = head;

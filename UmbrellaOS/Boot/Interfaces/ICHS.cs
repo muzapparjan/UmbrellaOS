@@ -27,7 +27,7 @@ namespace UmbrellaOS.Boot.Interfaces
      * Using 512 byte sectors, the maximum size of a hard disk would be 7,844 gigabytes using CHS addressing (1024*255*63*512 is 8,422,686,720 bytes).
      * </summary>
      */
-    public interface ICHSAddress : IBinaryStreamWriter
+    public interface ICHS : IBinaryStreamWriter
     {
         /**
          * <summary>
@@ -36,14 +36,14 @@ namespace UmbrellaOS.Boot.Interfaces
          * The valid range is between 0 and 1023 cylinders.
          * </summary>
          */
-        public int Cylinder { get; set; }
+        public uint Cylinder { get; set; }
         /**
          * <summary>
          * Synonymous with side.<br/>
          * The valid range is between 0 and 255 heads (formerly 0-15).
          * </summary>
          */
-        public int Head { get; set; }
+        public uint Head { get; set; }
         /**
          * <summary>
          * Tracks are the concentric rings and, each track is divided into multiple sectors.<br/>
@@ -51,7 +51,7 @@ namespace UmbrellaOS.Boot.Interfaces
          * The valid range is between 1 and 63 sectors.
          * </summary>
          */
-        public int Sector { get; set; }
+        public uint Sector { get; set; }
         /**
          * <summary>
          * The CHS address represented with a byte sequence in little endian, by example: <br/>
