@@ -29,9 +29,35 @@ namespace UmbrellaOS.Boot.Interfaces
      */
     public interface ICHSAddress : IBinaryStreamWriter
     {
+        /**
+         * <summary>
+         * A hard disk consists of one or more platters with a read-write head is located on each side of the platter.<br/>
+         * A vertical section on the corresponding ring across all platters and sides is called a cylinder.<br/>
+         * The valid range is between 0 and 1023 cylinders.
+         * </summary>
+         */
         public int Cylinder { get; set; }
+        /**
+         * <summary>
+         * Synonymous with side.<br/>
+         * The valid range is between 0 and 255 heads (formerly 0-15).
+         * </summary>
+         */
         public int Head { get; set; }
+        /**
+         * <summary>
+         * Tracks are the concentric rings and, each track is divided into multiple sectors.<br/>
+         * 0 is reserved typically for the "boot sector".<br/>
+         * The valid range is between 1 and 63 sectors.
+         * </summary>
+         */
         public int Sector { get; set; }
+        /**
+         * <summary>
+         * The CHS address represented with a byte sequence in little endian, by example: <br/>
+         * (CCCCCCCC CCHHHHHH HHSSSSSS) in little endian: [HHSSSSSS, CCHHHHHH, CCCCCCCC]
+         * </summary>
+         */
         public byte[] Value { get; set; }
     }
 }

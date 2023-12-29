@@ -30,10 +30,10 @@ namespace UmbrellaOS.Boot
          * This field shall not be used by UEFI firmware.
          * </summary>
          */
-        public byte[] StartingCHS
+        public ICHSAddress StartingCHS
         {
             get => startingCHS;
-            set => value.CopyTo(startingCHS, 0);
+            set => startingCHS = value;
         }
         /**
          * <summary>
@@ -65,16 +65,16 @@ namespace UmbrellaOS.Boot
          * This field shall not be used by UEFI firmware.
          * </summary>
          */
-        public byte[] EndingCHS
+        public ICHSAddress EndingCHS
         {
             get => endingCHS;
-            set => value.CopyTo(endingCHS, 0);
+            set => endingCHS = value;
         }
 
         private byte bootIndicator = 0;
-        private byte[] startingCHS = new byte[3];
+        private ICHSAddress startingCHS = CHSAddress.Default;
         private IOSType osType = OSTypeUEFISystemPartition.Default;
-        private byte[] endingCHS = new byte[3];
+        private ICHSAddress endingCHS = CHSAddress.Default;
         private uint startingLBA = 0;
         private uint sizeInLBA = 0;
 
