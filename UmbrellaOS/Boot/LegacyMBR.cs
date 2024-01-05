@@ -111,6 +111,15 @@ namespace UmbrellaOS.Boot
          * <param name="logicalBlockSize">
          * The rest of the logical block, if any, is reserved.
          * </param>
+         * <exception cref="ArgumentException">
+         * If the boot code is larger than 424 byte, or the count of partition records is more than 4, an ArgumentException may be thrown.
+         * </exception>
+         * <exception cref="NullReferenceException">
+         * If the boot code array or the partition record array is null, an ArgumentOutOfRange exception may be thrown.
+         * </exception>
+         * <exception cref="ArgumentOutOfRangeException">
+         * If the logical block size is less than 512 byte, an ArgumentOutOfRange exception may be thrown.
+         * </exception>
          */
         public LegacyMBR(byte[] bootCode, uint uniqueMBRDiskSignature, ushort unknown, ILegacyMBRPartitionRecord[] partitionRecords, ulong logicalBlockSize)
         {

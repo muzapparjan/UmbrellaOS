@@ -1,5 +1,6 @@
 ﻿using UmbrellaOS.Boot.Interfaces;
 using UmbrellaOS.Boot.OSTypes;
+using UmbrellaOS.Generic.Extensions;
 
 namespace UmbrellaOS.Boot
 {
@@ -21,8 +22,20 @@ namespace UmbrellaOS.Boot
          */
         public bool Bootable
         {
-            get => bootIndicator == 0x80;
-            set => bootIndicator = (byte)(value ? 0x80 : 0);
+            get => BootIndicator == 0x80;
+            set => BootIndicator = (byte)(value ? 0x80 : 0);
+        }
+        /**
+         * <summary>
+         * 0x80 indicates that this is the bootable legacy partition.<br/>
+         * Other values indicate that this is not a bootable legacy partition.<br/>
+         * This field shall not be used by UEFI firmware.
+         * </summary>
+         */
+        public byte BootIndicator
+        {
+            get => bootIndicator;
+            set => bootIndicator = value;
         }
         /**
          * <summary>
@@ -70,22 +83,53 @@ namespace UmbrellaOS.Boot
             get => endingCHS;
             set => endingCHS = value;
         }
+        /**
+         * <summary>
+         * Starting LBA of the partition on the disk.<br/>
+         * This field is used by UEFI firmware to determine the start of the partition.
+         * </summary>
+         */
+        public ILBA StartingLBA
+        {
+            get => startingLBA;
+            set => startingLBA = value;
+        }
+        /**
+         * <summary>
+         * Size of the partition in LBA units of logical blocks.<br/>
+         * This field is used by UEFI firmware to determine the size of the partition.
+         * </summary>
+         */
+        public uint SizeInLBA
+        {
+            get => sizeInLBA;
+            set => sizeInLBA = value;
+        }
 
         private byte bootIndicator = 0;
         private ICHS startingCHS = CHS.Default;
         private IOSType osType = OSTypeUEFISystemPartition.Default;
         private ICHS endingCHS = CHS.Default;
-        private uint startingLBA = 0;
+        private ILBA startingLBA = LBA.Default;
         private uint sizeInLBA = 0;
 
         public void Write(Stream stream)
         {
-            throw new NotImplementedException();
+            stream.WriteByte(BootIndicator);
+            StartingCHS.Write(stream);
+            OSType.Write(stream);
+            EndingCHS.Write(stream);
+            StartingLBA.Write(stream);
+            stream.Write(SizeInLBA.GetBytesLittleEndian());
         }
-
-        public Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
+        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await stream.WriteByteAsync(BootIndicator, cancellationToken);
+            await StartingCHS.WriteAsync(stream, cancellationToken);
+            await OSType.WriteAsync(stream, cancellationToken);
+            await EndingCHS.WriteAsync(stream, cancellationToken);
+            await StartingLBA.WriteAsync(stream, cancellationToken);
+            await stream.WriteAsync(SizeInLBA.GetBytesLittleEndian(), cancellationToken);
         }
     }
 }

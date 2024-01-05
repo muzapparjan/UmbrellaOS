@@ -1,4 +1,5 @@
 ﻿using UmbrellaOS.Boot.Interfaces;
+using UmbrellaOS.Generic.Extensions;
 
 namespace UmbrellaOS.Boot.OSTypes
 {
@@ -11,7 +12,7 @@ namespace UmbrellaOS.Boot.OSTypes
         public void Write(Stream stream) => stream.WriteByte(Value);
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
         {
-            await stream.WriteAsync(new byte[1] { Value }, cancellationToken);
+            await stream.WriteByteAsync(Value, cancellationToken);
         }
     }
 }

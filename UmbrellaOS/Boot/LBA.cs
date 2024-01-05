@@ -20,6 +20,8 @@ namespace UmbrellaOS.Boot
      */
     public struct LBA : ILBA
     {
+        public static readonly LBA Default = new();
+
         public uint Value
         {
             get => value;
