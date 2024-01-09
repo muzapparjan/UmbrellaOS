@@ -5,17 +5,19 @@ namespace UmbrellaOS.Boot.OSTypes
 {
     /**
      * <summary>
-     * Value: 0xEE<br/>
-     * Indication that this legacy MBR is followed by an EFI header.<br/>
-     * 0xEE (i.e., GPT Protective) is used by a protective MBR to define a fake partition covering the entire disk.
+     * Value: 0x00<br/>
+     * To be precise: this is not used to designate unused area on the disk,
+     * but marks an unused partition table entry.
+     * (All other fields should be zero as well.)<br/>
+     * Unused area is not designated.
      * </summary>
      * <seealso cref="IOSType"/>
      */
-    public sealed class OSTypeGPTProtective : IOSType
+    public sealed class OSTypeEmpty : IOSType
     {
-        public static readonly OSTypeGPTProtective Default = new();
+        public static readonly OSTypeEmpty Default = new();
 
-        public byte Value => 0xEE;
+        public byte Value => 0x00;
 
         public void Write(Stream stream) => stream.WriteByte(Value);
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)

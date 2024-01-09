@@ -17,7 +17,7 @@ namespace UmbrellaOS.Boot.Extensions
          */
         public static ICHS ToCHS(this ILBA lba, uint hpc, uint spt)
         {
-            return new CHS(lba.Value / (hpc * spt), (lba.Value / spt) % hpc, (lba.Value % spt) + 1);
+            return new CHS(lba.Value / (hpc * spt), (lba.Value / spt) % hpc, (lba.Value % spt));
         }
     }
 }

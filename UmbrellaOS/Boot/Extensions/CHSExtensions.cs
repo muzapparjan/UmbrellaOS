@@ -14,7 +14,7 @@ namespace UmbrellaOS.Boot.Extensions
          */
         public static ILBA ToLBA(this ICHS chs, uint hpc, uint spt)
         {
-            return new LBA((chs.Cylinder * hpc + chs.Head) * spt + chs.Sector - 1);
+            return new LBA((chs.Cylinder * hpc + chs.Head) * spt + chs.Sector);
         }
     }
 }

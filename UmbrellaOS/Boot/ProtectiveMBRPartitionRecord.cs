@@ -1,6 +1,5 @@
 ﻿using UmbrellaOS.Boot.Interfaces;
 using UmbrellaOS.Boot.OSTypes;
-using UmbrellaOS.Generic.Extensions;
 
 namespace UmbrellaOS.Boot
 {
@@ -11,27 +10,23 @@ namespace UmbrellaOS.Boot
      * </summary>
      * <seealso cref="MBRPartitionRecord"/>
      */
-    public sealed class LegacyMBRPartitionRecord : MBRPartitionRecord
+    public sealed class ProtectiveMBRPartitionRecord : MBRPartitionRecord
     {
         /**
-         * <summary>Create a new LegacyMBRPartitionRecord with default values.</summary>
+         * <summary>Create a new ProtectiveMBRPartitionRecord with default values.</summary>
          * <seealso cref="MBRPartitionRecord"/>
          */
-        public LegacyMBRPartitionRecord() : base()
+        public ProtectiveMBRPartitionRecord() : base()
         {
-            BootIndicator = 0x80;
-            OSType = OSTypeUEFISystemPartition.Default;
+            BootIndicator = 0x00;
+            StartingCHS = new CHS(0, 8, 0);
+            OSType = OSTypeGPTProtective.Default;
+            EndingCHS = new CHS(1023, 255, 63);
+            StartingLBA = new LBA(0x00000001);
+            SizeInLBA = 0xFFFFFFFF;
         }
         /**
-         * <summary>Create a new LegacyMBRPartitionRecord with given values.</summary>
-         * <param name="startingCHS">
-         * [ LegacyMBRPartitionRecord ]:<br/>
-         * Start of partition in CHS address format.<br/>
-         * This field shall not be used by UEFI firmware.
-         * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
-         * Set to LBA 0x000200 / CHS (0, 8, 0), corresponding to the Starting LBA field.
-         * </param>
+         * <summary>Create a new ProtectiveMBRPartitionRecord with given values.</summary>
          * <param name="endingCHS">
          * [ LegacyMBRPartitionRecord ]:<br/>
          * End of partition in CHS address format.<br/>
@@ -40,14 +35,6 @@ namespace UmbrellaOS.Boot
          * [ ProtectiveMBRPartitionRecord ]:<br/>
          * Set to the CHS address of the last logical block on the disk.<br/>
          * Set to LBA 0xFFFFFF / CHS (1023, 255, 63) if it is not possible to represent the value in this field.
-         * </param>
-         * <param name="startingLBA">
-         * [ LegacyMBRPartitionRecord ]:<br/>
-         * Starting LBA of the partition on the disk.<br/>
-         * This field is used by UEFI firmware to determine the start of the partition.
-         * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
-         * Set to 0x00000001 (i.e., the LBA of the GPT Partition Header).
          * </param>
          * <param name="sizeInLBA">
          * [ LegacyMBRPartitionRecord ]:<br/>
@@ -60,8 +47,8 @@ namespace UmbrellaOS.Boot
          * </param>
          * <seealso cref="MBRPartitionRecord"/>
          */
-        public LegacyMBRPartitionRecord(ICHS startingCHS, ICHS endingCHS, ILBA startingLBA, uint sizeInLBA) :
-            base(0x80, startingCHS, OSTypeUEFISystemPartition.Default, endingCHS, startingLBA, sizeInLBA)
+        public ProtectiveMBRPartitionRecord(ICHS endingCHS, uint sizeInLBA) :
+            base(0x00, new CHS(0, 8, 0), OSTypeGPTProtective.Default, endingCHS, new LBA(0x00000001), sizeInLBA)
         { }
     }
 }

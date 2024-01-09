@@ -31,7 +31,7 @@ namespace UmbrellaOS.Boot
      */
     public struct CHS : ICHS
     {
-        public static readonly CHS Default = new(0, 0, 1);
+        public static readonly CHS Default = new();
 
         /**
          * <summary>
@@ -74,15 +74,15 @@ namespace UmbrellaOS.Boot
          * 0 is reserved typically for the "boot sector".<br/>
          * The valid range is between 1 and 63 sectors.
          * </summary>
-         * <exception cref="ArgumentOutOfRangeException">If the new value is not within the range of [1, 63], an ArgumentOutOfRange exception may be thrown.</exception>
+         * <exception cref="ArgumentOutOfRangeException">If the new value is not within the range of [0, 63], an ArgumentOutOfRange exception may be thrown.</exception>
          */
         public uint Sector
         {
             get => sector;
             set
             {
-                if (value < 1 || value > 63)
-                    throw new ArgumentOutOfRangeException(nameof(value), "sector should be from 1 to 63");
+                if (value < 0 || value > 63)
+                    throw new ArgumentOutOfRangeException(nameof(value), "sector should be from 0 to 63");
                 sector = value;
             }
         }
