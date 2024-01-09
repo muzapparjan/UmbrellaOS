@@ -15,11 +15,11 @@ namespace UmbrellaOS.Boot
     {
         /**
          * <summary>
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * 0x80 indicates that this is the bootable legacy partition.<br/>
          * Other values indicate that this is not a bootable legacy partition.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to 0x00 to indicate a non-bootable partition.<br/>
          * If set to any value other than 0x00 the behavior of this flag on non-UEFI systems is undefined.<br/>
          * Must be ignored by UEFI implementations.
@@ -32,11 +32,11 @@ namespace UmbrellaOS.Boot
         }
         /**
          * <summary>
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * Start of partition in CHS address format.<br/>
          * This field shall not be used by UEFI firmware.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to LBA 0x000200 / CHS (0, 8, 0), corresponding to the Starting LBA field.
          * </summary>
          * <seealso cref="ICHS"/>
@@ -72,11 +72,11 @@ namespace UmbrellaOS.Boot
         }
         /**
          * <summary>
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * End of partition in CHS address format.<br/>
          * This field shall not be used by UEFI firmware.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to the CHS address of the last logical block on the disk.<br/>
          * Set to LBA 0xFFFFFF / CHS (1023, 255, 63) if it is not possible to represent the value in this field.
          * </summary>
@@ -88,11 +88,11 @@ namespace UmbrellaOS.Boot
         }
         /**
          * <summary>
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * Starting LBA of the partition on the disk.<br/>
          * This field is used by UEFI firmware to determine the start of the partition.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to 0x00000001 (i.e., the LBA of the GPT Partition Header).
          * </summary>
          */
@@ -103,11 +103,11 @@ namespace UmbrellaOS.Boot
         }
         /**
          * <summary>
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * Size of the partition in LBA units of logical blocks.<br/>
          * This field is used by UEFI firmware to determine the size of the partition.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to the size of the disk minus one.<br/>
          * Set to 0xFFFFFFFF if the size of the disk is too large to be represented in this field.
          * </summary>
@@ -126,27 +126,27 @@ namespace UmbrellaOS.Boot
         protected uint sizeInLBA = 0;
 
         /**
-         * <summary>Create a new MBRPartitionRecord with default values.</summary>
+         * <summary>Create a new MBR partition record with default values.</summary>
          */
         public MBRPartitionRecord() { }
         /**
-         * <summary>Create a new MBRPartitionRecord with given values.</summary>
+         * <summary>Create a new MBR partition record with given values.</summary>
          * <param name="bootIndicator">
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * 0x80 indicates that this is the bootable legacy partition.<br/>
          * Other values indicate that this is not a bootable legacy partition.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to 0x00 to indicate a non-bootable partition.<br/>
          * If set to any value other than 0x00 the behavior of this flag on non-UEFI systems is undefined.<br/>
          * Must be ignored by UEFI i mplementations.
          * </param>
          * <param name="startingCHS">
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * Start of partition in CHS address format.<br/>
          * This field shall not be used by UEFI firmware.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to LBA 0x000200 / CHS (0, 8, 0), corresponding to the Starting LBA field.
          * </param>
          * <param name="osType">
@@ -166,28 +166,28 @@ namespace UmbrellaOS.Boot
          * (http://uefi.org/uefi) under the heading “OS Type values used in the MBR disk layout”.
          * </param>
          * <param name="endingCHS">
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * End of partition in CHS address format.<br/>
          * This field shall not be used by UEFI firmware.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to the CHS address of the last logical block on the disk.<br/>
          * Set to LBA 0xFFFFFF / CHS (1023, 255, 63) if it is not possible to represent the value in this field.
          * </param>
          * <param name="startingLBA">
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * Starting LBA of the partition on the disk.<br/>
          * This field is used by UEFI firmware to determine the start of the partition.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to 0x00000001 (i.e., the LBA of the GPT Partition Header).
          * </param>
          * <param name="sizeInLBA">
-         * [ LegacyMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordLegacy ]:<br/>
          * Size of the partition in LBA units of logical blocks.<br/>
          * This field is used by UEFI firmware to determine the size of the partition.
          * <br/><br/>
-         * [ ProtectiveMBRPartitionRecord ]:<br/>
+         * [ MBRPartitionRecordProtective ]:<br/>
          * Set to the size of the disk minus one.<br/>
          * Set to 0xFFFFFFFF if the size of the disk is too large to be represented in this field.
          * </param>

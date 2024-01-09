@@ -9,7 +9,7 @@
      * </summary>
      * <seealso cref="IMBRPartitionRecord"/>
      */
-    public interface IProtectiveMBRPartitionRecord : IMBRPartitionRecord
+    public interface IMBRPartitionRecordProtective : IMBRPartitionRecord
     {
     }
 }

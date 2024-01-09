@@ -7,7 +7,7 @@
      * </summary>
      * <seealso cref="IMBRPartitionRecord"/>
      */
-    public interface ILegacyMBRPartitionRecord : IMBRPartitionRecord
+    public interface IMBRPartitionRecordLegacy : IMBRPartitionRecord
     {
     }
 }

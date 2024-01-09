@@ -8,7 +8,7 @@
      * </summary>
      * <seealso cref="IMBR"/>
      */
-    public interface ILegacyMBR : IMBR
+    public interface IMBRLegacy : IMBR
     {
     }
 }

@@ -9,7 +9,7 @@
      * </summary>
      * <seealso cref="IMBR"/>
      */
-    public interface IProtectiveMBR : IMBR
+    public interface IMBRProtective : IMBR
     {
     }
 }
