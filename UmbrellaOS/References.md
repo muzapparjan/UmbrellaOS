@@ -8,3 +8,4 @@
 * [Zone Bit Recording](https://en.wikipedia.org/wiki/Zone_bit_recording)
 * [Logical Block Addressing](https://en.wikipedia.org/wiki/Logical_block_addressing)
 * [Parallel ATA](https://en.wikipedia.org/wiki/Parallel_ATA)
+* [GUID Partition Table (GPT) Explained](https://www.computernetworkingnotes.com/networking-tutorials/guid-partition-table-gpt-explained.html)
