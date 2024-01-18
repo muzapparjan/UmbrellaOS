@@ -13,3 +13,7 @@
 * [GUID Partition Table](https://en.wikipedia.org/wiki/GUID_Partition_Table)
 * [Disk Partitioning](https://en.wikipedia.org/wiki/Disk_partitioning)
 * [EFI System Partition](https://en.wikipedia.org/wiki/EFI_system_partition)
+* [Option ROM](https://en.wikipedia.org/wiki/Option_ROM)
+* [Interrupt Tables Overview](https://stanislavs.org/helppc/int_table.html)
+* [Machine Instructions](https://www.geeksforgeeks.org/machine-instructions/)
+* [Intel64 and IA32 Instruction Encoding](https://muzapparjan.github.io/pages/Intel64&IA32%20Instruction%20Encoding.html)
