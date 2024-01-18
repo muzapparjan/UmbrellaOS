@@ -131,7 +131,7 @@ namespace UmbrellaOS.Boot
         protected uint uniqueMBRDiskSignature = 0;
         protected ushort unknown = 0;
         protected IMBRPartitionRecord[] partitionRecords = new IMBRPartitionRecord[4];
-        protected byte[] reserved = Array.Empty<byte>();
+        protected byte[] reserved = [];
 
         /**
          * <summary>

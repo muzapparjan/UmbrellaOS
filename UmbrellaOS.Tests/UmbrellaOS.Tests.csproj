@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Generic\" />
-    <Folder Include="T000001\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\UmbrellaOS\UmbrellaOS.csproj" />
   </ItemGroup>
 

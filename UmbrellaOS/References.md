@@ -1,6 +1,7 @@
 # References
 
 * [UEFI Specification 2.10](https://uefi.org/specs/UEFI/2.10/index.html)
+* [UEFI](https://en.wikipedia.org/wiki/UEFI)
 * [Master Boot Record (MBR) Explained](https://www.computernetworkingnotes.com/networking-tutorials/master-boot-record-mbr-explained.html)
 * [Partition Types: OS Type values used in the MBR disk layout](https://www.win.tue.nl/~aeb/partitions/partition_types.html)
 * [CHS and LBA Hard Disk Addresses](https://www.thomas-krenn.com/en/wiki/CHS_and_LBA_Hard_Disk_Addresses)
@@ -9,3 +10,6 @@
 * [Logical Block Addressing](https://en.wikipedia.org/wiki/Logical_block_addressing)
 * [Parallel ATA](https://en.wikipedia.org/wiki/Parallel_ATA)
 * [GUID Partition Table (GPT) Explained](https://www.computernetworkingnotes.com/networking-tutorials/guid-partition-table-gpt-explained.html)
+* [GUID Partition Table](https://en.wikipedia.org/wiki/GUID_Partition_Table)
+* [Disk Partitioning](https://en.wikipedia.org/wiki/Disk_partitioning)
+* [EFI System Partition](https://en.wikipedia.org/wiki/EFI_system_partition)
