@@ -18,6 +18,6 @@ namespace UmbrellaOS.Instruction.Intel.Prefixes
     {
         public static readonly PrefixBND Default = new();
 
-        public PrefixBND() : base(0xF3) { }
+        public PrefixBND() : base(0xF2) { }
     }
 }
