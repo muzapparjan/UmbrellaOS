@@ -51,5 +51,13 @@ namespace UmbrellaOS.Instruction.Intel.Interfaces
      */
     public interface IInstructionIntel : IInstruction
     {
+        public IInstructionIntelBitMode BitMode { get; }
+        public IInstructionIntelPrefixLegacy[]? LegacyPrefixes { get; }
+        public IInstructionIntelPrefix[]? REXPrefixes { get; }
+        public IInstructionIntelOpcode Opcode { get; }
+        public IInstructionIntelModRM? ModRMM { get; }
+        public IInstructionIntelSIB? SIB { get; }
+        public IInstructionIntelDisplacement? Displacement { get; }
+        public IInstructionIntelImmediate? Immediate { get; }
     }
 }

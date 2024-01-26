@@ -8,6 +8,10 @@
 
   <ItemGroup>
     <Folder Include="Instruction\Intel\Instructions\Interfaces\" />
+    <Folder Include="Instruction\Intel\Displacements\" />
+    <Folder Include="Instruction\Intel\Immediates\" />
+    <Folder Include="Instruction\Intel\ModRMs\" />
+    <Folder Include="Instruction\Intel\Opcodes\Interfaces\" />
   </ItemGroup>
 
 </Project>

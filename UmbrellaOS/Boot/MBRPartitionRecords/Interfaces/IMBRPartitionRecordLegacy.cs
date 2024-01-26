@@ -1,4 +1,6 @@
-﻿namespace UmbrellaOS.Boot.Interfaces
+﻿using UmbrellaOS.Boot.Interfaces;
+
+namespace UmbrellaOS.Boot.MBRPartitinoRecords.Interfaces
 {
     /**
      * <summary>

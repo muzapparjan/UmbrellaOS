@@ -1,5 +1,4 @@
-﻿using UmbrellaOS.Boot.Interfaces;
-using UmbrellaOS.Generic.Extensions;
+﻿using UmbrellaOS.Boot.OSTypes.Interfaces;
 
 namespace UmbrellaOS.Boot.OSTypes
 {
@@ -9,18 +8,11 @@ namespace UmbrellaOS.Boot.OSTypes
      * Indication that this legacy MBR is followed by an EFI header.<br/>
      * 0xEE (i.e., GPT Protective) is used by a protective MBR to define a fake partition covering the entire disk.
      * </summary>
-     * <seealso cref="IOSType"/>
+     * <seealso cref="OSType"/>
+     * <seealso cref="IOSTypeGPTProtective"/>
      */
-    public sealed class OSTypeGPTProtective : IOSType
+    public sealed class OSTypeGPTProtective : OSType, IOSTypeGPTProtective
     {
-        public static readonly OSTypeGPTProtective Default = new();
-
-        public byte Value => 0xEE;
-
-        public void Write(Stream stream) => stream.WriteByte(Value);
-        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
-        {
-            await stream.WriteByteAsync(Value, cancellationToken);
-        }
+        public OSTypeGPTProtective() : base(0xEE) { }
     }
 }

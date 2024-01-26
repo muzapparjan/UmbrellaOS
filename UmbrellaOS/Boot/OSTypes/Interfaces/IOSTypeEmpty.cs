@@ -1,6 +1,6 @@
-﻿using UmbrellaOS.Boot.OSTypes.Interfaces;
+﻿using UmbrellaOS.Boot.Interfaces;
 
-namespace UmbrellaOS.Boot.OSTypes
+namespace UmbrellaOS.Boot.OSTypes.Interfaces
 {
     /**
      * <summary>
@@ -10,11 +10,9 @@ namespace UmbrellaOS.Boot.OSTypes
      * (All other fields should be zero as well.)<br/>
      * Unused area is not designated.
      * </summary>
-     * <seealso cref="OSType"/>
-     * <seealso cref="IOSTypeEmpty"/>
+     * <seealso cref="IOSType"/>
      */
-    public sealed class OSTypeEmpty : OSType, IOSTypeEmpty
+    public interface IOSTypeEmpty : IOSType
     {
-        public OSTypeEmpty() : base(0x00) { }
     }
 }

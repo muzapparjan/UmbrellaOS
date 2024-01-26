@@ -1,6 +1,6 @@
-﻿using UmbrellaOS.Boot.OSTypes.Interfaces;
+﻿using UmbrellaOS.Boot.Interfaces;
 
-namespace UmbrellaOS.Boot.OSTypes
+namespace UmbrellaOS.Boot.OSTypes.Interfaces
 {
     /**
      * <summary>
@@ -12,11 +12,9 @@ namespace UmbrellaOS.Boot.OSTypes
      * these types are used to support the Extensible Firmware Interface specification (EFI);
      * go to developer.intel.com and search for EFI.
      * </summary>
-     * <seealso cref="OSType"/>
-     * <seealso cref="IOSTypeUEFISystemPartition"/>
+     * <seealso cref="IOSType"/>
      */
-    public sealed class OSTypeUEFISystemPartition : OSType, IOSTypeUEFISystemPartition
+    public interface IOSTypeUEFISystemPartition : IOSType
     {
-        public OSTypeUEFISystemPartition() : base(0xEF) { }
     }
 }
