@@ -13,6 +13,8 @@ namespace UmbrellaOS.Boot.OSTypes
      */
     public sealed class OSTypeGPTProtective : OSType, IOSTypeGPTProtective
     {
+        public static readonly OSTypeGPTProtective Default = new();
+
         public OSTypeGPTProtective() : base(0xEE) { }
     }
 }

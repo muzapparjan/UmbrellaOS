@@ -2,7 +2,7 @@
 using System.Text;
 using UmbrellaOS.Boot;
 using UmbrellaOS.Boot.Extensions;
-using UmbrellaOS.Boot.Interfaces;
+using UmbrellaOS.Boot.MBRPartitinoRecords.Interfaces;
 using UmbrellaOS.Boot.MBRPartitionRecords;
 using UmbrellaOS.Boot.MBRs;
 using UmbrellaOS.Tests.Generic;
@@ -41,7 +41,7 @@ namespace UmbrellaOS.Tests.T000001
                         1024);
                 }
                 mbr.PartitionRecords = partitionRecords;
-                mbr.BootCode = GenerateBootCode();
+                mbr.BootCode = GenerateBootCodeX86();
 
                 var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
                 await mbr.WriteAsync(stream, cancellationToken);
@@ -68,7 +68,7 @@ namespace UmbrellaOS.Tests.T000001
                 return new GenericTestResult(false, null, exception);
             }
         }
-        private static byte[] GenerateBootCode()
+        private static byte[] GenerateBootCodeX86()
         {
             var codes = new byte[424];
 

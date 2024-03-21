@@ -15,6 +15,8 @@ namespace UmbrellaOS.Boot.OSTypes
      */
     public sealed class OSTypeEmpty : OSType, IOSTypeEmpty
     {
+        public static readonly OSTypeEmpty Default = new();
+
         public OSTypeEmpty() : base(0x00) { }
     }
 }

@@ -17,6 +17,8 @@ namespace UmbrellaOS.Boot.OSTypes
      */
     public sealed class OSTypeUEFISystemPartition : OSType, IOSTypeUEFISystemPartition
     {
+        public static readonly OSTypeUEFISystemPartition Default = new();
+
         public OSTypeUEFISystemPartition() : base(0xEF) { }
     }
 }
