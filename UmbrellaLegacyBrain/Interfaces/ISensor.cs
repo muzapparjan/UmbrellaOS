@@ -2,10 +2,10 @@
 {
     public interface ISensor
     {
-        public IData? Sense();
+        public IData? Sense(IEnvironment environment);
     }
     public interface ISensor<T> : ISensor where T : IData
     {
-        public new T? Sense();
+        public new T? Sense(IEnvironment environment);
     }
 }

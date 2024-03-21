@@ -1,11 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CefSharp.Common.NETCore" Version="122.1.120" />
+    <PackageReference Include="CefSharp.OffScreen" Version="122.1.120" />
+    <PackageReference Include="CefSharp.WinForms" Version="122.1.120" />
+    <PackageReference Include="CefSharp.Wpf" Version="122.1.120" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.3" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\UmbrellaLegacyBrain\UmbrellaLegacyBrain.csproj" />

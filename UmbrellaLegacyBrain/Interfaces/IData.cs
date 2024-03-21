@@ -2,7 +2,7 @@
 
 namespace UmbrellaLegacyBrain.Interfaces
 {
-    public interface IData : ISerializable
+    public interface IData : ISerializable//, ICollection<IData>
     {
     }
 }
