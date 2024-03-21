@@ -1,6 +1,8 @@
-﻿namespace UmbrellaLegacyBrain.Interfaces
+﻿using UmbrellaLegacyBrain.Generic.Interfaces;
+
+namespace UmbrellaLegacyBrain.Interfaces
 {
-    public interface IData
+    public interface IData : ISerializable
     {
     }
 }

@@ -1,11 +1,14 @@
-﻿namespace UmbrellaLegacyBrain.Generic
+﻿using System.Buffers.Binary;
+using UmbrellaLegacyBrain.Generic.Interfaces;
+
+namespace UmbrellaLegacyBrain.Generic
 {
     /**
      * <summary>
      * Variant of an HSV color, with each channel limited to [0, 1].
      * </summary>
      */
-    public struct ColorHSV01(float h = 0, float s = 0, float v = 0)
+    public struct ColorHSV01(float h = 0, float s = 0, float v = 0) : ISerializable
     {
         /**
          * <summary>
@@ -28,5 +31,39 @@
          * </summary>
          */
         public float v = v;
+
+        public float this[int index]
+        {
+            readonly get => index switch
+            {
+                0 => h,
+                1 => s,
+                2 => v,
+                _ => throw new IndexOutOfRangeException()
+            };
+            set
+            {
+                switch (index)
+                {
+                    case 0: h = value; break;
+                    case 1: s = value; break;
+                    case 2: v = value; break;
+                    default: throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
+        public static readonly ulong SerializedSize = sizeof(float) * 3;
+
+        public readonly void Serialize(Span<byte> data)
+        {
+            BinaryPrimitives.WriteSingleLittleEndian(data.Slice(sizeof(float) * 0, sizeof(float)), h);
+            BinaryPrimitives.WriteSingleLittleEndian(data.Slice(sizeof(float) * 1, sizeof(float)), s);
+            BinaryPrimitives.WriteSingleLittleEndian(data.Slice(sizeof(float) * 2, sizeof(float)), v);
+        }
+        public static ColorHSV01 Deserialize(Span<byte> data) => new(
+            BinaryPrimitives.ReadSingleLittleEndian(data.Slice(sizeof(float) * 0, sizeof(float))),
+            BinaryPrimitives.ReadSingleLittleEndian(data.Slice(sizeof(float) * 1, sizeof(float))),
+            BinaryPrimitives.ReadSingleLittleEndian(data.Slice(sizeof(float) * 2, sizeof(float))));
     }
 }

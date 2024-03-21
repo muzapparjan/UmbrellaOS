@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <Folder Include="Bodies\" />
+    <Folder Include="Sensors\VisonSensors\" />
+    <Folder Include="Sensors\SoundSensors\" />
   </ItemGroup>
 
 </Project>

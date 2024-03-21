@@ -5,8 +5,8 @@ namespace UmbrellaLegacyBrain.Data.Interfaces
 {
     public interface IImage : IData
     {
-        public int Width { get; }
-        public int Height { get; }
-        public ColorHSV01[,] Data { get; }
+        public uint Width { get; }
+        public uint Height { get; }
+        public ColorHSV01[] Data { get; }
     }
 }
