@@ -1,5 +1,4 @@
-﻿using UmbrellaOS.Boot.Interfaces;
-using UmbrellaOS.Generic.Extensions;
+﻿using UmbrellaOS.Boot.OSTypes.Interfaces;
 
 namespace UmbrellaOS.Boot.OSTypes
 {
@@ -11,18 +10,13 @@ namespace UmbrellaOS.Boot.OSTypes
      * (All other fields should be zero as well.)<br/>
      * Unused area is not designated.
      * </summary>
-     * <seealso cref="IOSType"/>
+     * <seealso cref="OSType"/>
+     * <seealso cref="IOSTypeEmpty"/>
      */
-    public sealed class OSTypeEmpty : IOSType
+    public sealed class OSTypeEmpty : OSType, IOSTypeEmpty
     {
         public static readonly OSTypeEmpty Default = new();
 
-        public byte Value => 0x00;
-
-        public void Write(Stream stream) => stream.WriteByte(Value);
-        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken = default)
-        {
-            await stream.WriteByteAsync(Value, cancellationToken);
-        }
+        public OSTypeEmpty() : base(0x00) { }
     }
 }

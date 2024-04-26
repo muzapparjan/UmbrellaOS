@@ -1,4 +1,5 @@
 ﻿using UmbrellaOS.Boot.Interfaces;
+using UmbrellaOS.Boot.MBRPartitinoRecords.Interfaces;
 using UmbrellaOS.Boot.OSTypes;
 
 namespace UmbrellaOS.Boot.MBRPartitionRecords

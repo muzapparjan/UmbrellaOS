@@ -26,11 +26,11 @@
          * <returns>true if the value is 1; false if the value is 0</returns>
          * <exception cref="ArgumentOutOfRangeException">If digit is not within the range of [0, 7], an ArgumentOutOfRange exception may be thrown.</exception>
          */
-        public static bool GetBitLittleEndian(this byte b, int digit)
+        public static byte GetBitLittleEndian(this byte b, int digit)
         {
             if (digit < 0 || digit > 7)
                 throw new ArgumentOutOfRangeException(nameof(digit), "digit should be from 0 to 7");
-            return (b & (0x01 << digit)) > 0;
+            return (b & (0x01 << digit)) > 0 ? (byte)1 : (byte)0;
         }
         /**
          * <summary>
@@ -42,12 +42,12 @@
          * <param name="digit">the position of the bit to set</param>
          * <exception cref="ArgumentOutOfRangeException">If digit is not within the range of [0, 7], an ArgumentOutOfRange exception may be thrown.</exception>
          */
-        public static void SetBitLittleEndian(this ref byte b, int digit, bool value)
+        public static void SetBitLittleEndian(this ref byte b, int digit, byte value)
         {
             if (digit < 0 || digit > 7)
                 throw new ArgumentOutOfRangeException(nameof(digit), "digit should be from 0 to 7");
             var mask = (byte)(0x01 << digit);
-            if (value)
+            if (value == 1)
                 b |= mask;
             else
                 b &= (byte)(~mask);

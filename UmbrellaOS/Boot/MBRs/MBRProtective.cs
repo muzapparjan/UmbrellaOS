@@ -1,4 +1,6 @@
 ﻿using UmbrellaOS.Boot.Interfaces;
+using UmbrellaOS.Boot.MBRPartitionRecords.Interfaces;
+using UmbrellaOS.Boot.MBRs.Interfaces;
 
 namespace UmbrellaOS.Boot.MBRs
 {
