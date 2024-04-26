@@ -4,9 +4,10 @@ namespace UmbrellaOS.Instruction.Encoding;
 
 using UmbrellaOS.Generic.Extensions;
 using B = BitMode;
-using R = Register;
+using REG = GeneralPurposeRegister;
 using W = OperandSize;
 using S = SignExtend;
+using SREG = SegmentRegister;
 using TTTN = ConditionTest;
 
 public static class Intel
@@ -17,7 +18,7 @@ public static class Intel
         _32,
         _64
     }
-    public enum Register
+    public enum GeneralPurposeRegister
     {
         AH, AL, AX, EAX, RAX,
         CH, CL, CX, ECX, RCX,
@@ -39,6 +40,15 @@ public static class Intel
         None,
         SignExtendToFill16BitOr32BitDestination
     }
+    public enum SegmentRegister
+    {
+        ES = 0,
+        CS = 1,
+        SS = 2,
+        DS = 3,
+        FS = 4,
+        GS = 5,
+    }
     public enum ConditionTest
     {
         O = 0, Overflow = 0,
@@ -59,40 +69,40 @@ public static class Intel
         NLE = 15, G = 15, NotLessThanOrEqualTo = 15, GreaterThan = 15,
     }
 
-    public static byte[] EncodeRegister(R register) => register switch
+    public static byte[] EncodeRegister(REG register) => register switch
     {
-        R.AH => [1, 0, 0],
-        R.AL => [0, 0, 0],
-        R.AX => [0, 0, 0],
-        R.EAX => [0, 0, 0],
-        R.RAX => [0, 0, 0],
-        R.CH => [1, 0, 1],
-        R.CL => [0, 0, 1],
-        R.CX => [0, 0, 1],
-        R.ECX => [0, 0, 1],
-        R.RCX => [0, 0, 1],
-        R.DH => [1, 1, 0],
-        R.DL => [0, 1, 0],
-        R.DX => [0, 1, 0],
-        R.EDX => [0, 1, 0],
-        R.RDX => [0, 1, 0],
-        R.BH => [1, 1, 1],
-        R.BL => [0, 1, 1],
-        R.BX => [0, 1, 1],
-        R.EBX => [0, 1, 1],
-        R.RBX => [0, 1, 1],
-        R.SP => [1, 0, 0],
-        R.ESP => [1, 0, 0],
-        R.RSP => [1, 0, 0],
-        R.BP => [1, 0, 1],
-        R.EBP => [1, 0, 1],
-        R.RBP => [1, 0, 1],
-        R.SI => [1, 1, 0],
-        R.ESI => [1, 1, 0],
-        R.RSI => [1, 1, 0],
-        R.DI => [1, 1, 1],
-        R.EDI => [1, 1, 1],
-        R.RDI => [1, 1, 1],
+        REG.AH => [1, 0, 0],
+        REG.AL => [0, 0, 0],
+        REG.AX => [0, 0, 0],
+        REG.EAX => [0, 0, 0],
+        REG.RAX => [0, 0, 0],
+        REG.CH => [1, 0, 1],
+        REG.CL => [0, 0, 1],
+        REG.CX => [0, 0, 1],
+        REG.ECX => [0, 0, 1],
+        REG.RCX => [0, 0, 1],
+        REG.DH => [1, 1, 0],
+        REG.DL => [0, 1, 0],
+        REG.DX => [0, 1, 0],
+        REG.EDX => [0, 1, 0],
+        REG.RDX => [0, 1, 0],
+        REG.BH => [1, 1, 1],
+        REG.BL => [0, 1, 1],
+        REG.BX => [0, 1, 1],
+        REG.EBX => [0, 1, 1],
+        REG.RBX => [0, 1, 1],
+        REG.SP => [1, 0, 0],
+        REG.ESP => [1, 0, 0],
+        REG.RSP => [1, 0, 0],
+        REG.BP => [1, 0, 1],
+        REG.EBP => [1, 0, 1],
+        REG.RBP => [1, 0, 1],
+        REG.SI => [1, 1, 0],
+        REG.ESI => [1, 1, 0],
+        REG.RSI => [1, 1, 0],
+        REG.DI => [1, 1, 1],
+        REG.EDI => [1, 1, 1],
+        REG.RDI => [1, 1, 1],
         _ => throw new ArgumentException($"failed to encode register {register}", nameof(register))
     };
     public static byte EncodeOperandSize(W operandSize)
@@ -108,6 +118,23 @@ public static class Intel
         if (signExtend == S.SignExtendToFill16BitOr32BitDestination)
             return 1;
         return 0;
+    }
+    public static byte[] EncodeSegmentRegister2(SREG register) => register switch
+    {
+        SREG.ES => [0, 0],
+        SREG.CS => [0, 1],
+        SREG.SS => [1, 0],
+        SREG.DS => [1, 1],
+        _ => throw new ArgumentException($"failed to encode segment register {register}", nameof(register))
+    };
+    public static byte[] EncodeSegmentRegister3(SREG register)
+    {
+        var result = new byte[3];
+        var value = (byte)register;
+        result[0] = value.GetBitLittleEndian(2);
+        result[1] = value.GetBitLittleEndian(1);
+        result[2] = value.GetBitLittleEndian(0);
+        return result;
     }
     public static byte[] EncodeConditionTest(TTTN conditionTest)
     {
