@@ -6,6 +6,7 @@ using UmbrellaOS.Generic.Extensions;
 using B = BitMode;
 using R = Register;
 using W = OperandSize;
+using S = SignExtend;
 using TTTN = ConditionTest;
 
 public static class Intel
@@ -32,6 +33,11 @@ public static class Intel
         _8,
         _16,
         _32
+    }
+    public enum SignExtend
+    {
+        None,
+        SignExtendToFill16BitOr32BitDestination
     }
     public enum ConditionTest
     {
@@ -94,6 +100,14 @@ public static class Intel
         if (operandSize == W._8)
             return 0;
         return 1;
+    }
+    public static byte EncodeSignExtend(S signExtend, bool effectOn16Or32BitImmediateData)
+    {
+        if (effectOn16Or32BitImmediateData)
+            return 0;
+        if (signExtend == S.SignExtendToFill16BitOr32BitDestination)
+            return 1;
+        return 0;
     }
     public static byte[] EncodeConditionTest(TTTN conditionTest)
     {
