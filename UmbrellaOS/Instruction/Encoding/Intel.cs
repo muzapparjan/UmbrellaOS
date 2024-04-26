@@ -173,4 +173,16 @@ public static class Intel
         return result;
     }
     public static byte EncodeDirection(D direction) => (byte)direction;
+
+    public static class Non64Bit
+    {
+        /** <summary>ASCII Adjust after Addition</summary> */
+        public static byte[] AAA() => [0B00110111];
+        /** <summary>ASCII Adjust AX before Division</summary> */
+        public static byte[] AAD() => [0B11010101, 0B00001010];
+        /** <summary>ASCII Adjust AX after Multiply</summary> */
+        public static byte[] AAM() => [0B11010100, 0B00001010];
+        /** <summary>ASCII Adjust AL after Subtraction</summary> */
+        public static byte[] AAS() => [0B00111111];
+    }
 }
