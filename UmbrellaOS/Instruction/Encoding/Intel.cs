@@ -5,6 +5,7 @@ namespace UmbrellaOS.Instruction.Encoding;
 using UmbrellaOS.Generic.Extensions;
 using B = BitMode;
 using R = Register;
+using W = OperandSize;
 using TTTN = ConditionTest;
 
 public static class Intel
@@ -25,6 +26,12 @@ public static class Intel
         BP, EBP, RBP,
         SI, ESI, RSI,
         DI, EDI, RDI,
+    }
+    public enum OperandSize
+    {
+        _8,
+        _16,
+        _32
     }
     public enum ConditionTest
     {
@@ -82,6 +89,12 @@ public static class Intel
         R.RDI => [1, 1, 1],
         _ => throw new ArgumentException($"failed to encode register {register}", nameof(register))
     };
+    public static byte EncodeOperandSize(W operandSize)
+    {
+        if (operandSize == W._8)
+            return 0;
+        return 1;
+    }
     public static byte[] EncodeConditionTest(TTTN conditionTest)
     {
         var result = new byte[3];
