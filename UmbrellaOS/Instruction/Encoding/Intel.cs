@@ -8,6 +8,7 @@ using REG = GeneralPurposeRegister;
 using W = OperandSize;
 using S = SignExtend;
 using SREG = SegmentRegister;
+using EEE = SpecialPurposeRegister;
 using TTTN = ConditionTest;
 
 public static class Intel
@@ -48,6 +49,16 @@ public static class Intel
         DS = 3,
         FS = 4,
         GS = 5,
+    }
+    public enum SpecialPurposeRegister
+    {
+        CR0 = 0, DR0 = 0,
+        DR1 = 1,
+        CR2 = 2, DR2 = 2,
+        CR3 = 3, DR3 = 3,
+        CR4 = 4,
+        DR6 = 6,
+        DR7 = 7,
     }
     public enum ConditionTest
     {
@@ -128,6 +139,15 @@ public static class Intel
         _ => throw new ArgumentException($"failed to encode segment register {register}", nameof(register))
     };
     public static byte[] EncodeSegmentRegister3(SREG register)
+    {
+        var result = new byte[3];
+        var value = (byte)register;
+        result[0] = value.GetBitLittleEndian(2);
+        result[1] = value.GetBitLittleEndian(1);
+        result[2] = value.GetBitLittleEndian(0);
+        return result;
+    }
+    public static byte[] EncodeSpecialPurposeRegister(EEE register)
     {
         var result = new byte[3];
         var value = (byte)register;
