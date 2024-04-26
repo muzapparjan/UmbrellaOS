@@ -10,6 +10,7 @@ using S = SignExtend;
 using SREG = SegmentRegister;
 using EEE = SpecialPurposeRegister;
 using TTTN = ConditionTest;
+using D = Direction;
 
 public static class Intel
 {
@@ -78,6 +79,11 @@ public static class Intel
         NL = 13, GE = 13, NotLessThan = 13, GreaterThanOrEqualTo = 13,
         LE = 14, NG = 14, LessThanOrEqualTo = 14, NotGreaterThan = 14,
         NLE = 15, G = 15, NotLessThanOrEqualTo = 15, GreaterThan = 15,
+    }
+    public enum Direction
+    {
+        SrcREG = 0, DstREG = 1,
+        SrcModRMOrSIB = 1, DstModRMOrSIB = 0
     }
 
     public static byte[] EncodeRegister(REG register) => register switch
@@ -166,4 +172,5 @@ public static class Intel
         result[3] = value.GetBitLittleEndian(0);
         return result;
     }
+    public static byte EncodeDirection(D direction) => (byte)direction;
 }
