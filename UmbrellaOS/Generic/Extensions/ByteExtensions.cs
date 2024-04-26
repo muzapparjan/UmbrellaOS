@@ -19,11 +19,12 @@
             for (var i = 0; i < buffer.Length; i++)
                 buffer[i] = value;
         }
+
         /**
          * <summary>Retrieve one bit from the specified position from right to left in a byte.</summary>
          * <param name="b">the byte to get bit from</param>
          * <param name="digit">the position of the bit to get</param>
-         * <returns>true if the value is 1; false if the value is 0</returns>
+         * <returns>0 or 1</returns>
          * <exception cref="ArgumentOutOfRangeException">If digit is not within the range of [0, 7], an ArgumentOutOfRange exception may be thrown.</exception>
          */
         public static byte GetBitLittleEndian(this byte b, int digit)
@@ -33,10 +34,17 @@
             return (b & (0x01 << digit)) > 0 ? (byte)1 : (byte)0;
         }
         /**
+         * <summary>Retrieve one bit from the specified position from left to right in a byte.</summary>
+         * <param name="b">the byte to get bit from</param>
+         * <param name="digit">the position of the bit to get</param>
+         * <returns>0 or 1</returns>
+         * <exception cref="ArgumentOutOfRangeException">If digit is not within the range of [0, 7], an ArgumentOutOfRange exception may be thrown.</exception>
+         */
+        public static byte GetBitBigEndian(this byte b, int digit) => b.GetBitLittleEndian(7 - digit);
+
+        /**
          * <summary>
-         * Set the bit value at the specified position from right to left in a byte.<br/>
-         * if the given value is true, the bit will be set to 1;<br/>
-         * if the given value is false, the bit will be set to 0.
+         * Set the bit value at the specified position from right to left in a byte.
          * </summary>
          * <param name="b">the byte to set the bit to</param>
          * <param name="digit">the position of the bit to set</param>
@@ -52,6 +60,96 @@
             else
                 b &= (byte)(~mask);
         }
+        /**
+         * <summary>
+         * Set the bit value at the specified position from left to right in a byte.
+         * </summary>
+         * <param name="b">the byte to set the bit to</param>
+         * <param name="digit">the position of the bit to set</param>
+         * <exception cref="ArgumentOutOfRangeException">If digit is not within the range of [0, 7], an ArgumentOutOfRange exception may be thrown.</exception>
+         */
+        public static void SetBitBigEndian(this ref byte b, int digit, byte value) => b.SetBitLittleEndian(7 - digit, value);
+
+        /**
+         * <summary>Retrieve a bit sequence from the specified position from right to left in a byte.</summary>
+         * <param name="b">the byte to get bit from</param>
+         * <param name="start">the position of the starting bit to get</param>
+         * <param name="count">the bit count to get totally</param>
+         * <returns>the bit sequence to get from the byte</returns>
+         * <exception cref="ArgumentOutOfRangeException">If the bit range is out of range, an ArgumentOutOfRange exception may be thrown.</exception>
+         */
+        public static byte[] GetBitsLittleEndian(this byte b, int start, int count)
+        {
+            if (start < 0)
+                throw new ArgumentOutOfRangeException(nameof(start), $"invalid bit index {start}");
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), $"invalid bit count {count}");
+            if (start + count > 8)
+                throw new ArgumentOutOfRangeException(nameof(count), $"invalid range [{start}, {start + count - 1}]");
+            var bits = new byte[count];
+            for (var i = 0; i < count; i++)
+                bits[i] = b.GetBitLittleEndian(start + i);
+            return bits;
+        }
+        /**
+         * <summary>Retrieve a bit sequence from the specified position from left to right in a byte.</summary>
+         * <param name="b">the byte to get bit from</param>
+         * <param name="start">the position of the starting bit to get</param>
+         * <param name="count">the bit count to get totally</param>
+         * <returns>the bit sequence to get from the byte</returns>
+         * <exception cref="ArgumentOutOfRangeException">If the bit range is out of range, an ArgumentOutOfRange exception may be thrown.</exception>
+         */
+        public static byte[] GetBitsBigEndian(this byte b, int start, int count)
+        {
+            if (start < 0)
+                throw new ArgumentOutOfRangeException(nameof(start), $"invalid bit index {start}");
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), $"invalid bit count {count}");
+            if (start + count > 8)
+                throw new ArgumentOutOfRangeException(nameof(count), $"invalid range [{start}, {start + count - 1}]");
+            var bits = new byte[count];
+            for (var i = 0; i < count; i++)
+                bits[i] = b.GetBitBigEndian(start + i);
+            return bits;
+        }
+
+        /**
+         * <summary>
+         * Set some bit values from right to left in a byte.
+         * </summary>
+         * <param name="b">the byte to set bits to</param>
+         * <param name="start">the starting position of the bit to set from</param>
+         * <param name="bits">the bit sequence to set to the byte</param>
+         * <exception cref="ArgumentOutOfRangeException">If the target range is not a subset of [0, 7], an ArgumentOutOfRange exception may be thrown.</exception>
+         */
+        public static void SetBitsLittleEndian(this ref byte b, int start, byte[] bits)
+        {
+            if (start < 0)
+                throw new ArgumentOutOfRangeException(nameof(start), $"invalid bit index {start}");
+            if (start + bits.Length > 8)
+                throw new ArgumentOutOfRangeException(nameof(bits), $"invalid range [{start}, {start + bits.Length - 1}]");
+            for (var i = 0; i < bits.Length; i++)
+                b.SetBitLittleEndian(start + i, bits[i]);
+        }
+        /**
+         * <summary>
+         * Set some bit values from left to right in a byte.
+         * </summary>
+         * <param name="b">the byte to set bits to</param>
+         * <param name="start">the starting position of the bit to set from</param>
+         * <param name="bits">the bit sequence to set to the byte</param>
+         * <exception cref="ArgumentOutOfRangeException">If the target range is not a subset of [0, 7], an ArgumentOutOfRange exception may be thrown.</exception>
+         */
+        public static void SetBitsBigEndian(this ref byte b, int start, byte[] bits)
+        {
+            if (start < 0)
+                throw new ArgumentOutOfRangeException(nameof(start), $"invalid bit index {start}");
+            if (start + bits.Length > 8)
+                throw new ArgumentOutOfRangeException(nameof(bits), $"invalid range [{start}, {start + bits.Length - 1}]");
+            for (var i = 0; i < bits.Length; i++)
+                b.SetBitBigEndian(start + i, bits[i]);
+        }
+
         /**
          * <summary>Copy the bit value at the specified position from src to dst.</summary>
          * <param name="src">the byte to get bit from</param>
