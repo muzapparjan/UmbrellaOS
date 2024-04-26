@@ -1,14 +1,21 @@
-﻿namespace UmbrellaOS.Instruction.Encoding;
+﻿using static UmbrellaOS.Instruction.Encoding.Intel;
+
+namespace UmbrellaOS.Instruction.Encoding;
+
+using UmbrellaOS.Generic.Extensions;
+using B = BitMode;
+using R = Register;
+using TTTN = ConditionTest;
 
 public static class Intel
 {
-    public enum B
+    public enum BitMode
     {
         _16,
         _32,
         _64
     }
-    public enum R
+    public enum Register
     {
         AH, AL, AX, EAX, RAX,
         CH, CL, CX, ECX, RCX,
@@ -18,6 +25,25 @@ public static class Intel
         BP, EBP, RBP,
         SI, ESI, RSI,
         DI, EDI, RDI,
+    }
+    public enum ConditionTest
+    {
+        O = 0, Overflow = 0,
+        NO = 1, NoOverflow = 1,
+        B = 2, NAE = 2, Below = 2, NotAboveOrEqual = 2,
+        NB = 3, AE = 3, NotBelow = 3, AboveOrEqual = 3,
+        E = 4, Z = 4, Equal = 4, Zero = 4,
+        NE = 5, NZ = 5, NotEqual = 5, NotZero = 5,
+        BE = 6, NA = 6, BelowOrEqual = 6, NotAbove = 6,
+        NBE = 7, A = 7, NotBelowOrEqual = 7, Above = 7,
+        S = 8, Sign = 8,
+        NS = 9, NotSign = 9,
+        P = 10, PE = 10, Parity = 10, ParityEven = 10,
+        NP = 11, PO = 11, NotParity = 11, ParityOdd = 11,
+        L = 12, NGE = 12, LessThan = 12, NotGreaterThanOrEqualTo = 12,
+        NL = 13, GE = 13, NotLessThan = 13, GreaterThanOrEqualTo = 13,
+        LE = 14, NG = 14, LessThanOrEqualTo = 14, NotGreaterThan = 14,
+        NLE = 15, G = 15, NotLessThanOrEqualTo = 15, GreaterThan = 15,
     }
 
     public static byte[] EncodeRegister(R register) => register switch
@@ -56,4 +82,14 @@ public static class Intel
         R.RDI => [1, 1, 1],
         _ => throw new ArgumentException($"failed to encode register {register}", nameof(register))
     };
+    public static byte[] EncodeConditionTest(TTTN conditionTest)
+    {
+        var result = new byte[3];
+        var value = (byte)conditionTest;
+        result[0] = value.GetBitLittleEndian(3);
+        result[1] = value.GetBitLittleEndian(2);
+        result[2] = value.GetBitLittleEndian(1);
+        result[3] = value.GetBitLittleEndian(0);
+        return result;
+    }
 }
