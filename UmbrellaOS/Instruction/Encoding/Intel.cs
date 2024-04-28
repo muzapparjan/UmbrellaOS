@@ -1,4 +1,7 @@
-﻿namespace UmbrellaOS.Instruction.Encoding;
+﻿using UmbrellaOS.Generic;
+using UmbrellaOS.Generic.Extensions;
+
+namespace UmbrellaOS.Instruction.Encoding;
 
 /**
  * <summary>
@@ -343,5 +346,47 @@ public static class Intel
         if (mode == OperatingMode._64Bit)
             throw new InvalidOperationException($"instruction {nameof(AAS)} is invalid in {mode} mode");
         return [0x3F];
+    }
+
+    public static byte[] ADC(byte value) => [0x14, value];
+    public static byte[] ADC(ushort value) => [0x15, .. value.GetBytesLittleEndian()];
+    public static byte[] ADC(uint value) => [0x15, .. value.GetBytesLittleEndian()];
+
+    /**
+     * <summary>
+     * Encode an REX prefix.<br/><br/>
+     * REX prefixes are a set of 16 opcodes that span one row of the opcode map
+     * and occupy entries 40H to 4FH.<br/>
+     * These opcodes represent valid instructions (INC or DEC)
+     * in IA-32 operating modes and in compatibility mode.<br/>
+     * In 64-bit mode, the same opcodes represent the instruction prefix REX
+     * and are not treated as individual instructions.<br/><br/>
+     * The single-byte-opcode forms of the INC/DEC instructions are not available in 64-bit mode.<br/>
+     * INC/DEC functionality is still available using ModR/M forms of the same instructions
+     * (opcodes FF/0 and FF/1).<br/><br/>
+     * Some combinations of REX prefix fields are invalid.<br/>
+     * In such cases, the prefix is ignored. Some additional information follows:<br/><br/>
+     * • Setting REX.W can be used to determine the operand size but does not solely determine operand width.
+     * Like the 66H size prefix, 64-bit operand size override has no effect on byte-specific operations.<br/>
+     * • For non-byte operations: if a 66H prefix is used with prefix (REX.W = 1), 66H is ignored.<br/>
+     * • If a 66H override is used with REX and REX.W = 0, the operand size is 16 bits.<br/>
+     * • REX.R modifies the ModR/M reg field when that field encodes a GPR, SSE, control or debug register.
+     * REX.R is ignored when ModR/M specifies other registers or defines an extended opcode.<br/>
+     * • REX.X bit modifies the SIB index field.<br/>
+     * • REX.B either modifies the base in the ModR/M r/m field or SIB base field;
+     * or it modifies the opcode reg field used for accessing GPRs.
+     * </summary>
+     * <param name="w">
+     * 0 = Operand size determined by CS.D<br/>
+     * 1 = 64 Bit Operand Size
+     * </param>
+     * <param name="r">Extension of the ModR/M reg field</param>
+     * <param name="x">Extension of the SIB index field</param>
+     * <param name="b">Extension of the ModR/M r/m field, SIB base field, or Opcode reg field</param>
+     */
+    private static byte REX(Bit w, Bit r, Bit x, Bit b)
+    {
+        Bit[] bits = [0, 1, 0, 0, w, r, x, b];
+        return bits.AsByteBigEndian();
     }
 }
