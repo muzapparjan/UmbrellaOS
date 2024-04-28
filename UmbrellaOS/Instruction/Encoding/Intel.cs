@@ -64,7 +64,18 @@ public static class Intel
          * <summary>
          * This mode enables a 64-bit operating system to run applications
          * written to access 64-bit linear address space.<br/>
-         * For brevity, the 64-bit sub-mode is referred to as 64-bit mode in IA-32 architecture.
+         * For brevity, the 64-bit sub-mode is referred to as 64-bit mode in IA-32 architecture.<br/><br/>
+         * 64-bit mode extends the number of general purpose registers and
+         * SIMD extension registers from 8 to 16.<br/>
+         * General purpose registers are widened to 64 bits.<br/>
+         * The mode also introduces a new opcode prefix (REX) to access the register extensions.<br/><br/>
+         * 64-bit mode is enabled by the operating system on a code-segment basis.<br/>
+         * Its default address size is 64 bits and its default operand size is 32 bits.<br/>
+         * The default operand size can be overridden on an instruction-by-instruction basis
+         * using a REX opcode prefix in conjunction with an operand size override prefix.<br/><br/>
+         * REX prefixes allow a 64-bit operand to be specified when operating in 64-bit mode.<br/>
+         * By using this mechanism, many existing instructions have been promoted
+         * to allow the use of 64-bit registers and 64-bit addresses.
          * </summary>
          */
         _64Bit
@@ -72,7 +83,7 @@ public static class Intel
 
     /**
      * <summary>
-     * Adjust After Addition<br/><br/>
+     * ASCII adjust AL after addition.<br/><br/>
      * Adjusts the sum of two unpacked BCD values to create an unpacked BCD result.<br/>
      * The AL register is the implied source and destination operand for this instruction.<br/>
      * The AAA instruction is only useful when it follows an ADD instruction that
@@ -83,7 +94,27 @@ public static class Intel
      * and the CF and AF flags are set.<br/>
      * If there was no decimal carry, the CF and AF flags are cleared and
      * the AH register is unchanged.<br/>
-     * In either case, bits 4 through 7 of the AL register are set to 0.
+     * In either case, bits 4 through 7 of the AL register are set to 0.<br/><br/>
+     * This instruction executes as described in compatibility mode and legacy mode.<br/>
+     * It is not valid in 64-bit mode.<br/><br/>
+     * Operation:<br/>
+     * --------------------------------------------------<br/>
+     * IF 64-Bit Mode<br/>
+     * ----THEN<br/>
+     * --------#UD;<br/>
+     * ----ELSE<br/>
+     * --------IF ((AL AND 0FH) > 9) or (AF = 1)<br/>
+     * ------------THEN<br/>
+     * ----------------AX := AX + 106H;<br/>
+     * ----------------AF := 1;<br/>
+     * ----------------CF := 1;<br/>
+     * ------------ELSE<br/>
+     * ----------------AF := 0;<br/>
+     * ----------------CF := 0;<br/>
+     * --------FI;<br/>
+     * --------AL := AL AND 0FH;<br/>
+     * FI;<br/>
+     * --------------------------------------------------
      * </summary>
      * <param name="mode">target operating mode to encode</param>
      * <exception cref="InvalidOperationException">an InvalidOperationException may be thrown when the operating mode is 64-bit mode(sub-mode of IA-32e mode)</exception>
@@ -92,6 +123,95 @@ public static class Intel
     {
         if (mode == OperatingMode._64Bit)
             throw new InvalidOperationException($"instruction {nameof(AAA)} is invalid in {mode} mode");
-        return [0B00110111];
+        return [0x37];
+    }
+    /**
+     * <summary>
+     * ASCII adjust AX before division.<br/><br/>
+     * Adjusts two unpacked BCD digits
+     * (the least-significant digit in the AL register and the most-significant digit in the AH register)
+     * so that a division operation performed on the result will yield a correct unpacked BCD value.<br/>
+     * The AAD instruction is only useful when it precedes a DIV instruction that divides
+     * (binary division) the adjusted value in the AX register by an unpacked BCD value.<br/><br/>
+     * The AAD instruction sets the value in the AL register to (AL + (10 * AH)),
+     * and then clears the AH register to 00H.<br/>
+     * The value in the AX register is then equal to the binary equivalent
+     * of the original unpacked two-digit (base 10) number in registers AH and AL.<br/><br/>
+     * The generalized version of this instruction allows adjustment of two unpacked digits
+     * of any number base (see the “Operation” section below),
+     * by setting the imm8 byte to the selected number base
+     * (for example, 08H for octal, 0AH for decimal, or 0CH for base 12 numbers).<br/>
+     * The AAD mnemonic is interpreted by all assemblers to mean adjust ASCII (base 10) values.<br/>
+     * To adjust values in another number base,
+     * the instruction must be hand coded in machine code (D5 imm8).<br/><br/>
+     * This instruction executes as described in compatibility mode and legacy mode.<br/>
+     * It is not valid in 64-bit mode.<br/><br/>
+     * Operation:<br/>
+     * --------------------------------------------------<br/>
+     * IF 64-Bit Mode<br/>
+     * ----THEN<br/>
+     * --------#UD;<br/>
+     * ----ELSE<br/>
+     * --------tempAL := AL;<br/>
+     * --------tempAH := AH;<br/>
+     * --------AL := (tempAL + (tempAH ∗ imm8)) AND FFH;<br/>
+     * --------(* imm8 is set to 0AH for the AAD mnemonic.*)<br/>
+     * --------AH := 0;<br/>
+     * FI;<br/>
+     * --------------------------------------------------
+     * </summary>
+     * <param name="mode">target operating mode to encode</param>
+     * <exception cref="InvalidOperationException">an InvalidOperationException may be thrown when the operating mode is 64-bit mode(sub-mode of IA-32e mode)</exception>
+     */
+    public static byte[] AAD(OperatingMode mode)
+    {
+        if (mode == OperatingMode._64Bit)
+            throw new InvalidOperationException($"instruction {nameof(AAD)} is invalid in {mode} mode");
+        return [0xD5, 0x0A];
+    }
+    /**
+     * <summary>
+     * Adjust AX before division to number base imm8.<br/><br/>
+     * Adjusts two unpacked BCD digits
+     * (the least-significant digit in the AL register and the most-significant digit in the AH register)
+     * so that a division operation performed on the result will yield a correct unpacked BCD value.<br/>
+     * The AAD instruction is only useful when it precedes a DIV instruction that divides
+     * (binary division) the adjusted value in the AX register by an unpacked BCD value.<br/><br/>
+     * The AAD instruction sets the value in the AL register to (AL + (10 * AH)),
+     * and then clears the AH register to 00H.<br/>
+     * The value in the AX register is then equal to the binary equivalent
+     * of the original unpacked two-digit (base 10) number in registers AH and AL.<br/><br/>
+     * The generalized version of this instruction allows adjustment of two unpacked digits
+     * of any number base (see the “Operation” section below),
+     * by setting the imm8 byte to the selected number base
+     * (for example, 08H for octal, 0AH for decimal, or 0CH for base 12 numbers).<br/>
+     * The AAD mnemonic is interpreted by all assemblers to mean adjust ASCII (base 10) values.<br/>
+     * To adjust values in another number base,
+     * the instruction must be hand coded in machine code (D5 imm8).<br/><br/>
+     * This instruction executes as described in compatibility mode and legacy mode.<br/>
+     * It is not valid in 64-bit mode.<br/><br/>
+     * Operation:<br/>
+     * --------------------------------------------------<br/>
+     * IF 64-Bit Mode<br/>
+     * ----THEN<br/>
+     * --------#UD;<br/>
+     * ----ELSE<br/>
+     * --------tempAL := AL;<br/>
+     * --------tempAH := AH;<br/>
+     * --------AL := (tempAL + (tempAH ∗ imm8)) AND FFH;<br/>
+     * --------(* imm8 is set to 0AH for the AAD mnemonic.*)<br/>
+     * --------AH := 0;<br/>
+     * FI;<br/>
+     * --------------------------------------------------
+     * </summary>
+     * <param name="mode">target operating mode to encode</param>
+     * <param name="base">the base number to adjust AX before division</param>
+     * <exception cref="InvalidOperationException">an InvalidOperationException may be thrown when the operating mode is 64-bit mode(sub-mode of IA-32e mode)</exception>
+     */
+    public static byte[] AAD(OperatingMode mode, byte @base)
+    {
+        if (mode == OperatingMode._64Bit)
+            throw new InvalidOperationException($"instruction {nameof(AAD)} is invalid in {mode} mode");
+        return [0xD5, @base];
     }
 }
