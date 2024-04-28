@@ -1,188 +1,217 @@
-﻿using static UmbrellaOS.Instruction.Encoding.Intel;
-
-namespace UmbrellaOS.Instruction.Encoding;
-
-using UmbrellaOS.Generic.Extensions;
-using B = BitMode;
-using REG = GeneralPurposeRegister;
-using W = OperandSize;
-using S = SignExtend;
-using SREG = SegmentRegister;
-using EEE = SpecialPurposeRegister;
-using TTTN = ConditionTest;
-using D = Direction;
+﻿namespace UmbrellaOS.Instruction.Encoding;
 
 public static class Intel
 {
-    public enum BitMode
+    /**
+     * <summary>
+     * The IA-32 architecture supports three basic operating modes:<br/>
+     * protected mode, real-address mode, and system management mode.<br/><br/>
+     * 
+     * Reference:<br/>
+     * [Intel® 64 and IA-32 Architectures Software Developer's Manual Combined Version Volume 1 Chapter 3 Section 1 (V1.3.1)]
+     * </summary>
+     */
+    public enum OperatingMode
     {
-        _16,
-        _32,
-        _64
-    }
-    public enum GeneralPurposeRegister
-    {
-        AH, AL, AX, EAX, RAX,
-        CH, CL, CX, ECX, RCX,
-        DH, DL, DX, EDX, RDX,
-        BH, BL, BX, EBX, RBX,
-        SP, ESP, RSP,
-        BP, EBP, RBP,
-        SI, ESI, RSI,
-        DI, EDI, RDI,
-    }
-    public enum OperandSize
-    {
-        _8,
-        _16,
-        _32
-    }
-    public enum SignExtend
-    {
-        None,
-        SignExtendToFill16BitOr32BitDestination
-    }
-    public enum SegmentRegister
-    {
-        ES = 0,
-        CS = 1,
-        SS = 2,
-        DS = 3,
-        FS = 4,
-        GS = 5,
-    }
-    public enum SpecialPurposeRegister
-    {
-        CR0 = 0, DR0 = 0,
-        DR1 = 1,
-        CR2 = 2, DR2 = 2,
-        CR3 = 3, DR3 = 3,
-        CR4 = 4,
-        DR6 = 6,
-        DR7 = 7,
-    }
-    public enum ConditionTest
-    {
-        O = 0, Overflow = 0,
-        NO = 1, NoOverflow = 1,
-        B = 2, NAE = 2, Below = 2, NotAboveOrEqual = 2,
-        NB = 3, AE = 3, NotBelow = 3, AboveOrEqual = 3,
-        E = 4, Z = 4, Equal = 4, Zero = 4,
-        NE = 5, NZ = 5, NotEqual = 5, NotZero = 5,
-        BE = 6, NA = 6, BelowOrEqual = 6, NotAbove = 6,
-        NBE = 7, A = 7, NotBelowOrEqual = 7, Above = 7,
-        S = 8, Sign = 8,
-        NS = 9, NotSign = 9,
-        P = 10, PE = 10, Parity = 10, ParityEven = 10,
-        NP = 11, PO = 11, NotParity = 11, ParityOdd = 11,
-        L = 12, NGE = 12, LessThan = 12, NotGreaterThanOrEqualTo = 12,
-        NL = 13, GE = 13, NotLessThan = 13, GreaterThanOrEqualTo = 13,
-        LE = 14, NG = 14, LessThanOrEqualTo = 14, NotGreaterThan = 14,
-        NLE = 15, G = 15, NotLessThanOrEqualTo = 15, GreaterThan = 15,
-    }
-    public enum Direction
-    {
-        SrcREG = 0, DstREG = 1,
-        SrcModRMOrSIB = 1, DstModRMOrSIB = 0
+        /**
+         * <summary>
+         * This mode is the native state of the processor.<br/>
+         * Among the capabilities of protected mode is the ability to directly execute
+         * “real-address mode” 8086 software in a protected, multi-tasking environment.<br/>
+         * This feature is called virtual-8086 mode, although it is not actually a processor mode.<br/>
+         * Virtual-8086 mode is actually a protected mode attribute that can be enabled for any task.
+         * </summary>
+         */
+        Protected,
+        /**
+         * <summary>
+         * This mode implements the programming environment of the Intel 8086 processor with extensions
+         * (such as the ability to switch to protected or system management mode).<br/>
+         * The processor is placed in real-address mode following power-up or a reset.
+         * </summary>
+         */
+        RealAddress,
+        /**
+         * <summary>
+         * This mode provides an operating system or executive with a transparent mechanism
+         * for implementing platform-specific functions such as power management and system security.<br/>
+         * The processor enters SMM when the external SMM interrupt pin (SMI#)
+         * is activated or an SMI is received from the advanced programmable interrupt controller (APIC).<br/><br/>
+         * In SMM, the processor switches to a separate address space
+         * while saving the basic context of the currently running program or task.<br/>
+         * SMM-specific code may then be executed transparently
+         * Upon returning from SMM, the processor is placed back into its state prior
+         * to the system management interrupt.<br/>
+         * SMM was introduced with the Intel386™ SL and Intel486™ SL processors and
+         * became a standard IA-32 feature with the Pentium processor family.
+         * </summary>
+         */
+        SystemManagement,
+        /**
+         * <summary>
+         * Compatibility mode permits most legacy 16-bit and 32-bit applications
+         * to run without re-compilation under a 64-bit operating system.<br/>
+         * For brevity, the compatibility sub-mode is referred to as compatibility mode
+         * in IA-32 architecture.<br/>
+         * Compatibility mode also supports all of the privilege levels
+         * that are supported in 64-bit and protected modes.<br/>
+         * Legacy applications that run in Virtual 8086 mode or use hardware task management
+         * will not work in this mode.
+         * </summary>
+         */
+        Compatibility,
+        /**
+         * <summary>
+         * This mode enables a 64-bit operating system to run applications
+         * written to access 64-bit linear address space.<br/>
+         * For brevity, the 64-bit sub-mode is referred to as 64-bit mode in IA-32 architecture.<br/><br/>
+         * 64-bit mode extends the number of general purpose registers and
+         * SIMD extension registers from 8 to 16.<br/>
+         * General purpose registers are widened to 64 bits.<br/>
+         * The mode also introduces a new opcode prefix (REX) to access the register extensions.<br/><br/>
+         * 64-bit mode is enabled by the operating system on a code-segment basis.<br/>
+         * Its default address size is 64 bits and its default operand size is 32 bits.<br/>
+         * The default operand size can be overridden on an instruction-by-instruction basis
+         * using a REX opcode prefix in conjunction with an operand size override prefix.<br/><br/>
+         * REX prefixes allow a 64-bit operand to be specified when operating in 64-bit mode.<br/>
+         * By using this mechanism, many existing instructions have been promoted
+         * to allow the use of 64-bit registers and 64-bit addresses.
+         * </summary>
+         */
+        _64Bit
     }
 
-    public static byte[] EncodeRegister(REG register) => register switch
+    /**
+     * <summary>
+     * ASCII adjust AL after addition.<br/><br/>
+     * Adjusts the sum of two unpacked BCD values to create an unpacked BCD result.<br/>
+     * The AL register is the implied source and destination operand for this instruction.<br/>
+     * The AAA instruction is only useful when it follows an ADD instruction that
+     * adds (binary addition) two unpacked BCD values and stores a byte result in the AL register.<br/>
+     * The AAA instruction then adjusts the contents of the AL register
+     * to contain the correct 1-digit unpacked BCD result.<br/><br/>
+     * If the addition produces a decimal carry, the AH register increments by 1,
+     * and the CF and AF flags are set.<br/>
+     * If there was no decimal carry, the CF and AF flags are cleared and
+     * the AH register is unchanged.<br/>
+     * In either case, bits 4 through 7 of the AL register are set to 0.<br/><br/>
+     * This instruction executes as described in compatibility mode and legacy mode.<br/>
+     * It is not valid in 64-bit mode.<br/><br/>
+     * Operation:<br/>
+     * --------------------------------------------------<br/>
+     * IF 64-Bit Mode<br/>
+     * ----THEN<br/>
+     * --------#UD;<br/>
+     * ----ELSE<br/>
+     * --------IF ((AL AND 0FH) > 9) or (AF = 1)<br/>
+     * ------------THEN<br/>
+     * ----------------AX := AX + 106H;<br/>
+     * ----------------AF := 1;<br/>
+     * ----------------CF := 1;<br/>
+     * ------------ELSE<br/>
+     * ----------------AF := 0;<br/>
+     * ----------------CF := 0;<br/>
+     * --------FI;<br/>
+     * --------AL := AL AND 0FH;<br/>
+     * FI;<br/>
+     * --------------------------------------------------
+     * </summary>
+     * <param name="mode">target operating mode to encode</param>
+     * <exception cref="InvalidOperationException">an InvalidOperationException may be thrown when the operating mode is 64-bit mode(sub-mode of IA-32e mode)</exception>
+     */
+    public static byte[] AAA(OperatingMode mode)
     {
-        REG.AH => [1, 0, 0],
-        REG.AL => [0, 0, 0],
-        REG.AX => [0, 0, 0],
-        REG.EAX => [0, 0, 0],
-        REG.RAX => [0, 0, 0],
-        REG.CH => [1, 0, 1],
-        REG.CL => [0, 0, 1],
-        REG.CX => [0, 0, 1],
-        REG.ECX => [0, 0, 1],
-        REG.RCX => [0, 0, 1],
-        REG.DH => [1, 1, 0],
-        REG.DL => [0, 1, 0],
-        REG.DX => [0, 1, 0],
-        REG.EDX => [0, 1, 0],
-        REG.RDX => [0, 1, 0],
-        REG.BH => [1, 1, 1],
-        REG.BL => [0, 1, 1],
-        REG.BX => [0, 1, 1],
-        REG.EBX => [0, 1, 1],
-        REG.RBX => [0, 1, 1],
-        REG.SP => [1, 0, 0],
-        REG.ESP => [1, 0, 0],
-        REG.RSP => [1, 0, 0],
-        REG.BP => [1, 0, 1],
-        REG.EBP => [1, 0, 1],
-        REG.RBP => [1, 0, 1],
-        REG.SI => [1, 1, 0],
-        REG.ESI => [1, 1, 0],
-        REG.RSI => [1, 1, 0],
-        REG.DI => [1, 1, 1],
-        REG.EDI => [1, 1, 1],
-        REG.RDI => [1, 1, 1],
-        _ => throw new ArgumentException($"failed to encode register {register}", nameof(register))
-    };
-    public static byte EncodeOperandSize(W operandSize)
-    {
-        if (operandSize == W._8)
-            return 0;
-        return 1;
+        if (mode == OperatingMode._64Bit)
+            throw new InvalidOperationException($"instruction {nameof(AAA)} is invalid in {mode} mode");
+        return [0x37];
     }
-    public static byte EncodeSignExtend(S signExtend, bool effectOn16Or32BitImmediateData)
+    /**
+     * <summary>
+     * ASCII adjust AX before division.<br/><br/>
+     * Adjusts two unpacked BCD digits
+     * (the least-significant digit in the AL register and the most-significant digit in the AH register)
+     * so that a division operation performed on the result will yield a correct unpacked BCD value.<br/>
+     * The AAD instruction is only useful when it precedes a DIV instruction that divides
+     * (binary division) the adjusted value in the AX register by an unpacked BCD value.<br/><br/>
+     * The AAD instruction sets the value in the AL register to (AL + (10 * AH)),
+     * and then clears the AH register to 00H.<br/>
+     * The value in the AX register is then equal to the binary equivalent
+     * of the original unpacked two-digit (base 10) number in registers AH and AL.<br/><br/>
+     * The generalized version of this instruction allows adjustment of two unpacked digits
+     * of any number base (see the “Operation” section below),
+     * by setting the imm8 byte to the selected number base
+     * (for example, 08H for octal, 0AH for decimal, or 0CH for base 12 numbers).<br/>
+     * The AAD mnemonic is interpreted by all assemblers to mean adjust ASCII (base 10) values.<br/>
+     * To adjust values in another number base,
+     * the instruction must be hand coded in machine code (D5 imm8).<br/><br/>
+     * This instruction executes as described in compatibility mode and legacy mode.<br/>
+     * It is not valid in 64-bit mode.<br/><br/>
+     * Operation:<br/>
+     * --------------------------------------------------<br/>
+     * IF 64-Bit Mode<br/>
+     * ----THEN<br/>
+     * --------#UD;<br/>
+     * ----ELSE<br/>
+     * --------tempAL := AL;<br/>
+     * --------tempAH := AH;<br/>
+     * --------AL := (tempAL + (tempAH ∗ imm8)) AND FFH;<br/>
+     * --------(* imm8 is set to 0AH for the AAD mnemonic.*)<br/>
+     * --------AH := 0;<br/>
+     * FI;<br/>
+     * --------------------------------------------------
+     * </summary>
+     * <param name="mode">target operating mode to encode</param>
+     * <exception cref="InvalidOperationException">an InvalidOperationException may be thrown when the operating mode is 64-bit mode(sub-mode of IA-32e mode)</exception>
+     */
+    public static byte[] AAD(OperatingMode mode)
     {
-        if (effectOn16Or32BitImmediateData)
-            return 0;
-        if (signExtend == S.SignExtendToFill16BitOr32BitDestination)
-            return 1;
-        return 0;
+        if (mode == OperatingMode._64Bit)
+            throw new InvalidOperationException($"instruction {nameof(AAD)} is invalid in {mode} mode");
+        return [0xD5, 0x0A];
     }
-    public static byte[] EncodeSegmentRegister2(SREG register) => register switch
+    /**
+     * <summary>
+     * Adjust AX before division to number base imm8.<br/><br/>
+     * Adjusts two unpacked BCD digits
+     * (the least-significant digit in the AL register and the most-significant digit in the AH register)
+     * so that a division operation performed on the result will yield a correct unpacked BCD value.<br/>
+     * The AAD instruction is only useful when it precedes a DIV instruction that divides
+     * (binary division) the adjusted value in the AX register by an unpacked BCD value.<br/><br/>
+     * The AAD instruction sets the value in the AL register to (AL + (10 * AH)),
+     * and then clears the AH register to 00H.<br/>
+     * The value in the AX register is then equal to the binary equivalent
+     * of the original unpacked two-digit (base 10) number in registers AH and AL.<br/><br/>
+     * The generalized version of this instruction allows adjustment of two unpacked digits
+     * of any number base (see the “Operation” section below),
+     * by setting the imm8 byte to the selected number base
+     * (for example, 08H for octal, 0AH for decimal, or 0CH for base 12 numbers).<br/>
+     * The AAD mnemonic is interpreted by all assemblers to mean adjust ASCII (base 10) values.<br/>
+     * To adjust values in another number base,
+     * the instruction must be hand coded in machine code (D5 imm8).<br/><br/>
+     * This instruction executes as described in compatibility mode and legacy mode.<br/>
+     * It is not valid in 64-bit mode.<br/><br/>
+     * Operation:<br/>
+     * --------------------------------------------------<br/>
+     * IF 64-Bit Mode<br/>
+     * ----THEN<br/>
+     * --------#UD;<br/>
+     * ----ELSE<br/>
+     * --------tempAL := AL;<br/>
+     * --------tempAH := AH;<br/>
+     * --------AL := (tempAL + (tempAH ∗ imm8)) AND FFH;<br/>
+     * --------(* imm8 is set to 0AH for the AAD mnemonic.*)<br/>
+     * --------AH := 0;<br/>
+     * FI;<br/>
+     * --------------------------------------------------
+     * </summary>
+     * <param name="mode">target operating mode to encode</param>
+     * <param name="base">the base number to adjust AX before division</param>
+     * <exception cref="InvalidOperationException">an InvalidOperationException may be thrown when the operating mode is 64-bit mode(sub-mode of IA-32e mode)</exception>
+     */
+    public static byte[] AAD(OperatingMode mode, byte @base)
     {
-        SREG.ES => [0, 0],
-        SREG.CS => [0, 1],
-        SREG.SS => [1, 0],
-        SREG.DS => [1, 1],
-        _ => throw new ArgumentException($"failed to encode segment register {register}", nameof(register))
-    };
-    public static byte[] EncodeSegmentRegister3(SREG register)
-    {
-        var result = new byte[3];
-        var value = (byte)register;
-        result[0] = value.GetBitLittleEndian(2);
-        result[1] = value.GetBitLittleEndian(1);
-        result[2] = value.GetBitLittleEndian(0);
-        return result;
-    }
-    public static byte[] EncodeSpecialPurposeRegister(EEE register)
-    {
-        var result = new byte[3];
-        var value = (byte)register;
-        result[0] = value.GetBitLittleEndian(2);
-        result[1] = value.GetBitLittleEndian(1);
-        result[2] = value.GetBitLittleEndian(0);
-        return result;
-    }
-    public static byte[] EncodeConditionTest(TTTN conditionTest)
-    {
-        var result = new byte[3];
-        var value = (byte)conditionTest;
-        result[0] = value.GetBitLittleEndian(3);
-        result[1] = value.GetBitLittleEndian(2);
-        result[2] = value.GetBitLittleEndian(1);
-        result[3] = value.GetBitLittleEndian(0);
-        return result;
-    }
-    public static byte EncodeDirection(D direction) => (byte)direction;
-
-    public static class Non64Bit
-    {
-        /** <summary>ASCII Adjust after Addition</summary> */
-        public static byte[] AAA() => [0B00110111];
-        /** <summary>ASCII Adjust AX before Division</summary> */
-        public static byte[] AAD() => [0B11010101, 0B00001010];
-        /** <summary>ASCII Adjust AX after Multiply</summary> */
-        public static byte[] AAM() => [0B11010100, 0B00001010];
-        /** <summary>ASCII Adjust AL after Subtraction</summary> */
-        public static byte[] AAS() => [0B00111111];
+        if (mode == OperatingMode._64Bit)
+            throw new InvalidOperationException($"instruction {nameof(AAD)} is invalid in {mode} mode");
+        return [0xD5, @base];
     }
 }
