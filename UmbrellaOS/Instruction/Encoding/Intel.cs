@@ -144,34 +144,9 @@ public static class Intel
         SREG.DS => [1, 1],
         _ => throw new ArgumentException($"failed to encode segment register {register}", nameof(register))
     };
-    public static byte[] EncodeSegmentRegister3(SREG register)
-    {
-        var result = new byte[3];
-        var value = (byte)register;
-        result[0] = value.GetBitLittleEndian(2);
-        result[1] = value.GetBitLittleEndian(1);
-        result[2] = value.GetBitLittleEndian(0);
-        return result;
-    }
-    public static byte[] EncodeSpecialPurposeRegister(EEE register)
-    {
-        var result = new byte[3];
-        var value = (byte)register;
-        result[0] = value.GetBitLittleEndian(2);
-        result[1] = value.GetBitLittleEndian(1);
-        result[2] = value.GetBitLittleEndian(0);
-        return result;
-    }
-    public static byte[] EncodeConditionTest(TTTN conditionTest)
-    {
-        var result = new byte[3];
-        var value = (byte)conditionTest;
-        result[0] = value.GetBitLittleEndian(3);
-        result[1] = value.GetBitLittleEndian(2);
-        result[2] = value.GetBitLittleEndian(1);
-        result[3] = value.GetBitLittleEndian(0);
-        return result;
-    }
+    public static byte[] EncodeSegmentRegister3(SREG register) => ((byte)register).GetBitsBigEndian(5, 3);
+    public static byte[] EncodeSpecialPurposeRegister(EEE register) => ((byte)register).GetBitsBigEndian(5, 3);
+    public static byte[] EncodeConditionTest(TTTN conditionTest) => ((byte)conditionTest).GetBitsBigEndian(4, 4);
     public static byte EncodeDirection(D direction) => (byte)direction;
 
     public static class Non64Bit
