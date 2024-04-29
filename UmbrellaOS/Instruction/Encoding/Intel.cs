@@ -1,7 +1,16 @@
 ﻿using UmbrellaOS.Generic;
 using UmbrellaOS.Generic.Extensions;
+using static UmbrellaOS.Instruction.Encoding.Intel;
 
 namespace UmbrellaOS.Instruction.Encoding;
+
+using REG = GeneralPurposeRegister;
+using SREG = SegmentRegister;
+using EEE = SpecialPurposeRegister;
+using W = OperandSize;
+using S = SignExtend;
+using TTTN = ConditionTest;
+using D = Direction;
 
 /**
  * <summary>
@@ -85,6 +94,133 @@ public static class Intel
          * </summary>
          */
         _64Bit
+    }
+    public enum GeneralPurposeRegister
+    {
+        AL = 0, AX = 0, EAX = 0, RAX = 0,
+        CL = 1, CX = 1, ECX = 1, RCX = 1,
+        DL = 2, DX = 2, EDX = 2, RDX = 2,
+        BL = 3, BX = 3, EBX = 3, RBX = 3,
+        AH = 4, SP = 4, ESP = 4, RSP = 4,
+        CH = 5, BP = 5, EBP = 5, RBP = 5,
+        DH = 6, SI = 6, ESI = 6, RSI = 6,
+        BH = 7, DI = 7, EDI = 7, RDI = 7,
+    }
+    public enum SegmentRegister
+    {
+        ES = 0,
+        CS = 1,
+        SS = 2,
+        DS = 3,
+        FS = 4,
+        GS = 5,
+    }
+    public enum SpecialPurposeRegister
+    {
+        CR0 = 0, DR0 = 0,
+        DR1 = 1,
+        CR2 = 2, DR2 = 2,
+        CR3 = 3, DR3 = 3,
+        CR4 = 4,
+        DR6 = 6,
+        DR7 = 7,
+    }
+    /**
+     * <summary>
+     * The current operand-size attribute determines whether the processor is performing 16-bit,
+     * 32-bit or 64-bit operations.<br/>
+     * Within the constraints of the current operand-size attribute,
+     * the operand-size bit (w) can be used to indicate operations on 8-bit operands
+     * or the full operand size specified with the operand-size attribute.
+     * </summary>
+     */
+    public enum OperandSize
+    {
+        _8Bit,
+        _16Bit,
+        _32Bit,
+        _64Bit,
+    }
+    /**
+     * <summary>
+     * The sign-extend (s) bit occurs in instructions with immediate data fields
+     * that are being extended from 8 bits to 16 or 32 bits.
+     * </summary>
+     */
+    public enum SignExtend
+    {
+        None,
+        SignExtendToFill16BitOr32BitDestination,
+    }
+    public enum ConditionTest
+    {
+        /** <summary>Overflow</summary> */
+        O = 0,
+        /** <summary>No overflow</summary> */
+        NO = 1,
+        /** <summary>Below</summary> */
+        B = 2,
+        /** <summary>Not above or equal</summary> */
+        NAE = 2,
+        /** <summary>Not below</summary> */
+        NB = 3,
+        /** <summary>Above or equal</summary> */
+        AE = 3,
+        /** <summary>Equal</summary> */
+        E = 4,
+        /** <summary>Zero</summary> */
+        Z = 4,
+        /** <summary>Not equal</summary> */
+        NE = 5,
+        /** <summary>Not zero</summary> */
+        NZ = 5,
+        /** <summary>Below or equal</summary> */
+        BE = 6,
+        /** <summary>Not above</summary> */
+        NA = 6,
+        /** <summary>Not below or equal</summary> */
+        NBE = 7,
+        /** <summary>Above</summary> */
+        A = 7,
+        /** <summary>Sign</summary> */
+        S = 8,
+        /** <summary>Not sign</summary> */
+        NS = 9,
+        /** <summary>Parity</summary> */
+        P = 10,
+        /** <summary>Parity even</summary> */
+        PE = 10,
+        /** <summary>Not parity</summary> */
+        NP = 11,
+        /** <summary>Parity odd</summary> */
+        PO = 11,
+        /** <summary>Less than</summary> */
+        L = 12,
+        /** <summary>Not greater than or equal to</summary> */
+        NGE = 12,
+        /** <summary>Not less than</summary> */
+        NL = 13,
+        /** <summary>Greater than or equal to</summary> */
+        GE = 13,
+        /** <summary>Less than or equal to</summary> */
+        LE = 14,
+        /** <summary>Not greater than</summary> */
+        NG = 14,
+        /** <summary>Not less than or equal to</summary> */
+        NLE = 15,
+        /** <summary>Greater than</summary> */
+        G = 15,
+    }
+    /**
+     * <summary>
+     * In many two-operand instructions, a direction bit (d) indicates
+     * which operand is considered the source and which is the destination.
+     * </summary>
+     */
+    public enum Direction
+    {
+        RegisterToModRMOrSIB = 0,
+        ModRMOrSIBToRegister = 1,
     }
 
     /**
@@ -258,7 +394,7 @@ public static class Intel
     {
         if (mode == OperatingMode._64Bit)
             throw new InvalidOperationException($"instruction {nameof(AAM)} is invalid in {mode} mode");
-        return [0x04, 0x0A];
+        return [0xD4, 0x0A];
     }
     /**
      * <summary>
@@ -299,7 +435,7 @@ public static class Intel
     {
         if (mode == OperatingMode._64Bit)
             throw new InvalidOperationException($"instruction {nameof(AAM)} is invalid in {mode} mode");
-        return [0x04, @base];
+        return [0xD4, @base];
     }
     /**
      * <summary>
@@ -351,6 +487,20 @@ public static class Intel
     public static byte[] ADC(byte value) => [0x14, value];
     public static byte[] ADC(ushort value) => [0x15, .. value.GetBytesLittleEndian()];
     public static byte[] ADC(uint value) => [0x15, .. value.GetBytesLittleEndian()];
+    public static byte[] ADC(uint value, OperatingMode mode)
+    {
+        if (mode == OperatingMode._64Bit)
+            return [REX(1, 0, 0, 0), 0x15, .. value.GetBytesLittleEndian()];
+        return ADC(value);
+    }
+    public static byte[] ADC(byte value, REG register)
+    {
+        var registerSize = register.GetOperandSize();
+        var registerCode = register.ToBitArrayBigEndian();
+        if (registerSize == W._8Bit)
+            return [0x80, ((Bit[])[1, 1, 0, 1, 0, .. registerCode]).AsByteBigEndian(), value];
+        throw new NotImplementedException();
+    }
 
     /**
      * <summary>
@@ -389,4 +539,96 @@ public static class Intel
         Bit[] bits = [0, 1, 0, 0, w, r, x, b];
         return bits.AsByteBigEndian();
     }
+
+    /**
+     * <summary>
+     * Get size from register type.<br/><br/>
+     * The current operand-size attribute determines whether the processor is performing 16-bit,
+     * 32-bit or 64-bit operations.<br/>
+     * Within the constraints of the current operand-size attribute,
+     * the operand-size bit (w) can be used to indicate operations on 8-bit operands
+     * or the full operand size specified with the operand-size attribute.
+     * </summary>
+     * <param name="reg">the target register</param>
+     * <returns>the size of target register</returns>
+     */
+    private static W GetOperandSize(this REG reg)
+    {
+        if (reg == REG.AL || reg == REG.BL || reg == REG.CL || reg == REG.DL ||
+            reg == REG.AH || reg == REG.BH || reg == REG.CH || reg == REG.DH)
+            return W._8Bit;
+        if (reg == REG.AX || reg == REG.BX || reg == REG.CX || reg == REG.DX ||
+            reg == REG.SP || reg == REG.BP || reg == REG.SI || reg == REG.DI)
+            return W._16Bit;
+        if (reg == REG.EAX || reg == REG.EBX || reg == REG.ECX || reg == REG.EDX ||
+            reg == REG.ESP || reg == REG.EBP || reg == REG.ESI || reg == REG.EDI)
+            return W._32Bit;
+        if (reg == REG.RAX || reg == REG.RBX || reg == REG.RCX || reg == REG.RDX ||
+            reg == REG.RSP || reg == REG.RBP || reg == REG.RSI || reg == REG.RDI)
+            return W._64Bit;
+        throw new NotImplementedException($"failed to get size of register {reg}");
+    }
+    /**
+     * <summary>
+     * Encode the operand size to a bit value.
+     * </summary>
+     * <param name="w">the operand size to be encoded</param>
+     * <returns>a bit value that represents if an operand is of 8 bit length</returns>
+     */
+    private static Bit ToBit(this W w) => w == W._8Bit ? (byte)0 : (byte)1;
+    /**
+     * <summary>Encode the sign extend option to a bit value.</summary>
+     * <param name="s">the sign extend option to be encoded</param>
+     * <param name="immWidth">width of the immediate data to effect on</param>
+     */
+    private static Bit ToBit(this S s, W immWidth)
+    {
+        if (s == S.SignExtendToFill16BitOr32BitDestination && immWidth == W._8Bit)
+            return 1;
+        return 0;
+    }
+    /**
+     * <summary>Encode the direction field to a bit value.</summary>
+     * <param name="d">the direction to be encoded</param>
+     */
+    private static Bit ToBit(this D d) => (byte)d;
+    /**
+     * <summary>
+     * Encode a register as 3 bits in big endian order.
+     * </summary>
+     * <param name="reg">the register to be encoded</param>
+     * <returns>a bit sequence of length 3 in big endian order</returns>
+     */
+    private static Bit[] ToBitArrayBigEndian(this REG reg) => ((byte)reg).GetBitsBigEndian(5, 3);
+    /**
+     * <summary>Encode a segment register as 2 bits in big endian order.</summary>
+     * <param name="sreg">the segment register to be encoded</param>
+     * <returns>a bit sequence of length 2 in big endian order</returns>
+     * <exception cref="InvalidOperationException">An InvalidOperationException may be thrown if the register cannot be encoded into 2 bits.</exception>
+     */
+    private static Bit[] ToBitArray2BigEndian(this SREG sreg)
+    {
+        var value = (byte)sreg;
+        if (value > 3)
+            throw new InvalidOperationException($"failed to encode Segment Register {sreg} into 2 bits");
+        return value.GetBitsBigEndian(6, 2);
+    }
+    /**
+     * <summary>Encode a segment register as 3 bits in big endian order.</summary>
+     * <param name="sreg">the segment register to be encoded</param>
+     * <returns>a bit sequence of length 3 in big endian order</returns>
+     */
+    private static Bit[] ToBitArray3BigEndian(this SREG sreg) => ((byte)sreg).GetBitsBigEndian(5, 3);
+    /**
+     * <summary>Encode a special purpose register as 3 bits in big endian order.</summary>
+     * <param name="eee">the special purpose register to be encoded</param>
+     * <returns>a bit sequence of length 3 in big endian order</returns>
+     */
+    private static Bit[] ToBitArrayBigEndian(this EEE eee) => ((byte)eee).GetBitsBigEndian(5, 3);
+    /**
+     * <summary>Encode a condition test field as 4 bits in big endian order.</summary>
+     * <param name="tttn">the condition test field to be encoded</param>
+     * <returns>a bit sequence of length 4 in big endian order</returns>
+     */
+    private static Bit[] ToBitArrayBigEndian(this TTTN tttn) => ((byte)tttn).GetBitsBigEndian(4, 4);
 }

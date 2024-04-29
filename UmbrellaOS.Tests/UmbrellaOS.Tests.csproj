@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Iced" Version="1.21.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\UmbrellaOS\UmbrellaOS.csproj" />
   </ItemGroup>
 
