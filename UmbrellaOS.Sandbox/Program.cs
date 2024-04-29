@@ -1,4 +1,5 @@
 ﻿using UmbrellaOS.Tests.T000001;
+using UmbrellaOS.Tests.T000002;
 
 namespace UmbrellaOS.Sandbox
 {
@@ -6,7 +7,8 @@ namespace UmbrellaOS.Sandbox
     {
         private static void Main(string[] args)
         {
-            var test = new TestGenerateMBRLegacy();
+            //var test = new TestGenerateMBRLegacy();
+            var test = new TestEncodeInstructions();
             var task = test.RunAsync(default, args.Cast<object>().ToArray());
             task.Wait();
             var result = task.Result;
