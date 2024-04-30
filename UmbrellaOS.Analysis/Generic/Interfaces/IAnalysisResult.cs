@@ -7,7 +7,7 @@
      */
     public interface IAnalysisResult
     {
-        public bool IsPassed { get; }
+        public bool Success { get; }
         public object? ReturnValue { get; }
         public Exception? Exception { get; }
     }
