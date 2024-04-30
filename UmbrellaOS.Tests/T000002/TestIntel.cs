@@ -1,5 +1,6 @@
 ﻿using Iced.Intel;
 using System.Runtime.CompilerServices;
+using UmbrellaOS.Generic.Extensions;
 using UmbrellaOS.Instruction.Encoding;
 
 namespace UmbrellaOS.Tests.T000002;
@@ -83,6 +84,7 @@ internal static class TestIntel
         code = Intel.ADC(imm16);
         decoder = Decoder.Create(32, code);
         instruction = decoder.Decode();
+        Console.WriteLine($"Encoded: {code.ToHexString()}\tDecode Result: {instruction}");
         AssertCode(instruction, Code.Adc_AX_imm16);
         AssertImm(instruction.Immediate16, imm16);
 
