@@ -222,6 +222,23 @@ public static class Intel
         RegisterToModRMOrSIB = 0,
         ModRMOrSIBToRegister = 1,
     }
+    public enum Prefix
+    {
+        LOCK = 0xF0,
+        REPNE = 0xF2, REPNZ = 0xF2,
+        REP = 0xF3, REPE = 0xF3, REPZ = 0xF3,
+        BND = 0xF2,
+        CSOverride = 0x2E,
+        SSOverride = 0x36,
+        DSOverride = 0x3E,
+        ESOverride = 0x26,
+        FSOverride = 0x64,
+        GSOverride = 0x65,
+        BranchNotTaken = 0x2E,
+        BranchTaken = 0x3E,
+        OperandSizeOverride = 0x66,
+        AddressSizeOverride = 0x67,
+    }
 
     /**
      * <summary>
@@ -485,13 +502,19 @@ public static class Intel
     }
 
     public static byte[] ADC(byte value) => [0x14, value];
-    public static byte[] ADC(ushort value) => [0x66, 0x15, .. value.GetBytesLittleEndian()];
+    public static byte[] ADC(ushort value) => [(byte)Prefix.OperandSizeOverride, 0x15, .. value.GetBytesLittleEndian()];
     public static byte[] ADC(uint value) => [0x15, .. value.GetBytesLittleEndian()];
     public static byte[] ADC(uint value, OperatingMode mode)
     {
         if (mode == OperatingMode._64Bit)
             return [REX(1, 0, 0, 0), 0x15, .. value.GetBytesLittleEndian()];
         return ADC(value);
+    }
+    public static byte[] ADC(uint value, OperatingMode mode, bool atomic)
+    {
+        if (!atomic)
+            return ADC(value, mode);
+        return [(byte)Prefix.LOCK, .. ADC(value, mode)];
     }
     public static byte[] ADC(byte value, REG register)
     {

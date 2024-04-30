@@ -53,5 +53,6 @@
         public static bool operator ==(Bit left, Bit right) => left.Equals(right);
         public static bool operator !=(Bit left, Bit right) => !(left == right);
         public override readonly int GetHashCode() => Value.GetHashCode();
+        public override readonly string ToString() => Value.ToString();
     }
 }

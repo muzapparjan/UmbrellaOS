@@ -11,9 +11,9 @@ public static class BitArrayExtensions
     {
         if (bits.Length != 8)
             throw new ArgumentException($"the bit count should be 8", nameof(bits));
-        byte result = 0xFF;
+        byte result = 0x00;
         for (var i = 0; i < 8; i++)
-            result &= (byte)(bits[i] << i);
+            result |= (byte)(bits[i] << i);
         return result;
     }
     /**
@@ -25,9 +25,9 @@ public static class BitArrayExtensions
     {
         if (bits.Length != 8)
             throw new ArgumentException($"the bit count should be 8", nameof(bits));
-        byte result = 0xFF;
+        byte result = 0x00;
         for (var i = 0; i < 8; i++)
-            result &= (byte)(bits[i] << (7 - i));
+            result |= (byte)(bits[i] << (7 - i));
         return result;
     }
 }
