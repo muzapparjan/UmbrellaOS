@@ -74,34 +74,41 @@ internal static class TestIntel
         ushort imm16 = 0x1234;
         uint imm32 = 0x12345678;
 
+        //Adc_AL_imm8
         var code = Intel.ADC(imm8);
         var decoder = Decoder.Create(32, code);
         var instruction = decoder.Decode();
         AssertCode(instruction, Code.Adc_AL_imm8);
         AssertImm(instruction.Immediate8, imm8);
 
-        //FIXME test not passed
+        //Adc_AX_imm16
         code = Intel.ADC(imm16);
         decoder = Decoder.Create(32, code);
         instruction = decoder.Decode();
-        Console.WriteLine($"Encoded: {code.ToHexString()}\tDecode Result: {instruction}");
-
-        codeWriter32.Clear();
-        var ins = Iced.Intel.Instruction.Create(Code.Adc_AX_imm16);
-        ins.SetOpKind(0, OpKind.Register);
-        ins.SetOpKind(1, OpKind.Immediate16);
-        ins.SetOpRegister(0, Register.AX);
-        ins.SetImmediate(1, imm16);
-        encoder32.Encode(ins, 0);
-        Console.WriteLine($"Iced Encode Result: {codeWriter32.Value.ToHexString()}");
-
         AssertCode(instruction, Code.Adc_AX_imm16);
         AssertImm(instruction.Immediate16, imm16);
 
+        //Adc_EAX_imm32
         code = Intel.ADC(imm32);
         decoder = Decoder.Create(32, code);
         instruction = decoder.Decode();
         AssertCode(instruction, Code.Adc_EAX_imm32);
+        AssertImm(instruction.Immediate32, imm32);
+
+        //Adc_RAX_imm32
+        code = Intel.ADC(imm32, Intel.OperatingMode._64Bit);
+        decoder = Decoder.Create(64, code);
+        instruction = decoder.Decode();
+
+        Console.WriteLine($"Encode Result: {code.ToHexString()}");
+        Console.WriteLine($"ICED Decode Result: {instruction}");
+
+        codeWriter64.Clear();
+        var ins = Iced.Intel.Instruction.Create(Code.Adc_RAX_imm32, Register.RAX, imm32);
+        encoder64.Encode(ins, 0);
+        Console.WriteLine($"ICED Encode Result: {codeWriter64.Value.ToHexString()} | {ins}");
+
+        AssertCode(instruction, Code.Adc_RAX_imm32);
         AssertImm(instruction.Immediate32, imm32);
 
         //TODO
@@ -113,6 +120,11 @@ internal static class TestIntel
     {
         if (instruction.Code != code)
             throw new Exception($"{nameof(AssertCode)} test from {caller} failed: {instruction.Code} != {code}");
+    }
+    private static void AssertLockPrefix(Iced.Intel.Instruction instruction, [CallerMemberName] string? caller = null)
+    {
+        if (!instruction.HasLockPrefix)
+            throw new Exception($"{nameof(AssertLockPrefix)} test from {caller} failed");
     }
     private static void AssertImm(byte imm, byte answer, [CallerMemberName] string? caller = null)
     {
