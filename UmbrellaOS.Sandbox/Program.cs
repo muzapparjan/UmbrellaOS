@@ -12,7 +12,7 @@ namespace UmbrellaOS.Sandbox
             var task = test.RunAsync(default, args.Cast<object>().ToArray());
             task.Wait();
             var result = task.Result;
-            Console.WriteLine($"Test:\t{nameof(TestGenerateMBRLegacy)}");
+            Console.WriteLine($"Test:\t{nameof(TestEncodeInstructions)}");
             Console.WriteLine($"Result:");
             Console.WriteLine($"\tPassed:\t{result.IsPassed}");
             Console.WriteLine($"\tReturn:\t{result.ReturnValue}");
