@@ -85,6 +85,16 @@ internal static class TestIntel
         decoder = Decoder.Create(32, code);
         instruction = decoder.Decode();
         Console.WriteLine($"Encoded: {code.ToHexString()}\tDecode Result: {instruction}");
+
+        codeWriter32.Clear();
+        var ins = Iced.Intel.Instruction.Create(Code.Adc_AX_imm16);
+        ins.SetOpKind(0, OpKind.Register);
+        ins.SetOpKind(1, OpKind.Immediate16);
+        ins.SetOpRegister(0, Register.AX);
+        ins.SetImmediate(1, imm16);
+        encoder32.Encode(ins, 0);
+        Console.WriteLine($"Iced Encode Result: {codeWriter32.Value.ToHexString()}");
+
         AssertCode(instruction, Code.Adc_AX_imm16);
         AssertImm(instruction.Immediate16, imm16);
 

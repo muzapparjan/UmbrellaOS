@@ -485,7 +485,7 @@ public static class Intel
     }
 
     public static byte[] ADC(byte value) => [0x14, value];
-    public static byte[] ADC(ushort value) => [0x15, .. value.GetBytesLittleEndian()];
+    public static byte[] ADC(ushort value) => [0x66, 0x15, .. value.GetBytesLittleEndian()];
     public static byte[] ADC(uint value) => [0x15, .. value.GetBytesLittleEndian()];
     public static byte[] ADC(uint value, OperatingMode mode)
     {
