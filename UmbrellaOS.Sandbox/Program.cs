@@ -10,9 +10,10 @@ namespace UmbrellaOS.Sandbox
     {
         private static void Main(string[] args)
         {
+            //RunAnalysis(new AnalysisLineCount(), args.Cast<object>().ToArray());
+
             //RunTest(new TestGenerateMBRLegacy(), args.Cast<object>().ToArray());
-            //RunTest(new TestEncodeInstructions(), args.Cast<object>().ToArray());
-            RunAnalysis(new AnalysisLineCount(), args.Cast<object>().ToArray());
+            RunTest(new TestEncodeInstructions(), args.Cast<object>().ToArray());
         }
         private static void RunTest(ITest test, params object[] args)
         {
