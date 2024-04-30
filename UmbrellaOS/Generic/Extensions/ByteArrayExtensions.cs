@@ -19,4 +19,16 @@ public static class ByteArrayExtensions
         for (var i = 0; i < buffer.Length; i++)
             buffer[i] = value;
     }
+    /**
+     * <summary>
+     * Converts a byte array to its equivalent string representation
+     * that is encoded with uppercase hex characters.
+     * </summary>
+     * <param name="buffer">The array to convert to hex string.</param>
+     * <returns>The string representation in hex of the elements in the byte array.</returns>
+     */
+    public static string ToHexString(this byte[] buffer)
+    {
+        return Convert.ToHexString(buffer);
+    }
 }
