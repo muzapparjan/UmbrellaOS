@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\UmbrellaOS.Analysis\UmbrellaOS.Analysis.csproj" />
     <ProjectReference Include="..\UmbrellaOS.Tests\UmbrellaOS.Tests.csproj" />
     <ProjectReference Include="..\UmbrellaOS\UmbrellaOS.csproj" />
   </ItemGroup>
