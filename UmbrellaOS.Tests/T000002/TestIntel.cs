@@ -1,7 +1,6 @@
 ﻿using Iced.Intel;
 using System.Runtime.CompilerServices;
-using UmbrellaOS.Generic.Extensions;
-using UmbrellaOS.Instruction.Encoding;
+using UmbrellaOS.Instruction.Encoding.INTEL;
 
 namespace UmbrellaOS.Tests.T000002;
 
@@ -24,7 +23,7 @@ internal static class TestIntel
     }
     private static async Task TestAAA(CancellationToken cancellationToken = default)
     {
-        var code = Intel.AAA(Intel.OperatingMode.Protected);
+        var code = Intel.AAA(OperatingMode.Protected);
         var decoder = Decoder.Create(32, code);
         var instruction = decoder.Decode();
         AssertCode(instruction, Code.Aaa);
@@ -39,10 +38,10 @@ internal static class TestIntel
             AssertCode(instruction, Code.Aad_imm8);
             AssertImm(instruction.Immediate8, @base);
         };
-        testFunc(Intel.AAD(Intel.OperatingMode.Protected), 10);
-        testFunc(Intel.AAD(Intel.OperatingMode.Protected, 0x10), 0x10);
-        testFunc(Intel.AAD(Intel.OperatingMode.Protected, 0x37), 0x37);
-        testFunc(Intel.AAD(Intel.OperatingMode.Protected, 0xFF), 0xFF);
+        testFunc(Intel.AAD(OperatingMode.Protected), 10);
+        testFunc(Intel.AAD(OperatingMode.Protected, 0x10), 0x10);
+        testFunc(Intel.AAD(OperatingMode.Protected, 0x37), 0x37);
+        testFunc(Intel.AAD(OperatingMode.Protected, 0xFF), 0xFF);
         await Task.CompletedTask;
     }
     private static async Task TestAAM(CancellationToken cancellationToken = default)
@@ -54,15 +53,15 @@ internal static class TestIntel
             AssertCode(instruction, Code.Aam_imm8);
             AssertImm(instruction.Immediate8, @base);
         };
-        testFunc(Intel.AAM(Intel.OperatingMode.Protected), 10);
-        testFunc(Intel.AAM(Intel.OperatingMode.Protected, 0x10), 0x10);
-        testFunc(Intel.AAM(Intel.OperatingMode.Protected, 0x37), 0x37);
-        testFunc(Intel.AAM(Intel.OperatingMode.Protected, 0xFF), 0xFF);
+        testFunc(Intel.AAM(OperatingMode.Protected), 10);
+        testFunc(Intel.AAM(OperatingMode.Protected, 0x10), 0x10);
+        testFunc(Intel.AAM(OperatingMode.Protected, 0x37), 0x37);
+        testFunc(Intel.AAM(OperatingMode.Protected, 0xFF), 0xFF);
         await Task.CompletedTask;
     }
     private static async Task TestAAS(CancellationToken cancellationToken = default)
     {
-        var code = Intel.AAS(Intel.OperatingMode.Protected);
+        var code = Intel.AAS(OperatingMode.Protected);
         var decoder = Decoder.Create(32, code);
         var instruction = decoder.Decode();
         AssertCode(instruction, Code.Aas);
@@ -73,6 +72,7 @@ internal static class TestIntel
         byte imm8 = 0x12;
         ushort imm16 = 0x1234;
         uint imm32 = 0x12345678;
+        var reg8 = GeneralPurposeRegister.AH;
 
         //Adc_AL_imm8
         var code = Intel.ADC(imm8);
@@ -96,22 +96,18 @@ internal static class TestIntel
         AssertImm(instruction.Immediate32, imm32);
 
         //Adc_RAX_imm32
-        code = Intel.ADC(imm32, Intel.OperatingMode._64Bit);
+        code = Intel.ADC(imm32, OperatingMode._64Bit);
         decoder = Decoder.Create(64, code);
         instruction = decoder.Decode();
-
-        Console.WriteLine($"Encode Result: {code.ToHexString()}");
-        Console.WriteLine($"ICED Decode Result: {instruction}");
-
-        codeWriter64.Clear();
-        var ins = Iced.Intel.Instruction.Create(Code.Adc_RAX_imm32, Register.RAX, imm32);
-        encoder64.Encode(ins, 0);
-        Console.WriteLine($"ICED Encode Result: {codeWriter64.Value.ToHexString()} | {ins}");
-
         AssertCode(instruction, Code.Adc_RAX_imm32);
         AssertImm(instruction.Immediate32, imm32);
 
         //TODO
+        code = Intel.ADC(imm8, reg8);
+        decoder = Decoder.Create(32, code);
+        instruction = decoder.Decode();
+        AssertCode(instruction, Code.Adc_rm8_imm8);
+        AssertImm(instruction.Immediate8, imm8);
 
         await Task.CompletedTask;
     }
